@@ -162,6 +162,7 @@ class TrajectoryDataset(Dataset):
         self.delim = delim
         self.norm_lap_matr = norm_lap_matr
 
+        print(self.data_dir)
         all_files = os.listdir(self.data_dir)
         all_files = [os.path.join(self.data_dir, _path) for _path in all_files]
         num_peds_in_seq = []
@@ -279,7 +280,11 @@ class TrajectoryDataset(Dataset):
         start, end = self.seq_start_end[index]
 
         out = [
+            self.obs_traj[start:end, :], self.pred_traj[start:end, :],
+            self.obs_traj_rel[start:end, :], self.pred_traj_rel[start:end, :],
+            self.non_linear_ped[start:end], self.loss_mask[start:end, :],
             self.v_obs[index], self.A_obs[index],
             self.v_pred[index], self.A_pred[index]
+
         ]
         return out

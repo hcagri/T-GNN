@@ -13,34 +13,6 @@ from torch.nn.modules.module import Module
 import torch.optim as optim
 
 
-class spatial_attn(nn.Module):
-    def __init__(self, num_peds):
-        super(spatial_attn).__init__()
-        
-        self.W = nn.Linear(2*num_peds, 1)
-        self.lrelu = nn.LeakyReLU(0.2) 
-        self.softmax = nn.Softmax(dim=1)
-
-    def forward(self, A):
-        '''
-        A: (seq_len, num_peds, num_peds)
-        '''
-        num_peds = A.shape[2]
-        new_adjs = []
-        for a_ in A:
-            
-            a_ = a_.T
-            a_rep1 = a_.repeat_interleave(num_peds, 0)
-            a_rep2 = a_.repeat(num_peds, 1, 1).view(-1, num_peds)
-            a_concat = torch.cat([a_rep1, a_rep2], dim=1).view(num_peds,num_peds,2*num_peds)
-            e = self.lrelu(self.W(a_concat))
-            alpha = self.softmax(e)
-            attn_res = torch.einsum('ijh,jhf->ihf', alpha, a_)
-            new_adjs.append(attn_res)
-        
-        return torch.stack(new_adjs, dim=0)
-
-        
 class ConvTemporalGraphical(nn.Module):
     #Source : https://github.com/yysijie/st-gcn/blob/master/net/st_gcn.py
     r"""The basic module for applying a graph convolution.
@@ -180,110 +152,45 @@ class st_gcn(nn.Module):
 
         return x, A
 
-class T_GNN(nn.Module):
-    def __init__(self,
-                 n_stgcnn=1,
-                 n_txpcnn=1,
-                 input_feat=2,
-                 feat_dim=64,
-                 output_feat=5,
-                 seq_len=8,
-                 pred_seq_len=12,
-                 kernel_size=3
-                 ):
-        super(T_GNN,self).__init__()
+class social_stgcnn(nn.Module):
+    def __init__(self,n_stgcnn =1,n_txpcnn=1,input_feat=2,output_feat=5,
+                 seq_len=8,pred_seq_len=12,kernel_size=3):
+        super(social_stgcnn,self).__init__()
         self.n_stgcnn= n_stgcnn
         self.n_txpcnn = n_txpcnn
-
-
-        self.lin_proj = nn.Linear(input_feat, feat_dim)
-        self.relu = nn.ReLU()
-
-        self.adap_l = adaptive_learning(feat_dim, seq_len)
-
+                
         self.st_gcns = nn.ModuleList()
-        self.st_gcns.append(st_gcn(feat_dim,feat_dim,(kernel_size,seq_len)))
-        for j in range(1,self.n_stgcnn-2):
-            self.st_gcns.append(st_gcn(feat_dim,feat_dim,(kernel_size,seq_len)))
-        self.st_gcns.append(st_gcn(feat_dim,output_feat,(kernel_size,seq_len)))
-
-
+        self.st_gcns.append(st_gcn(input_feat,output_feat,(kernel_size,seq_len)))
+        for j in range(1,self.n_stgcnn):
+            self.st_gcns.append(st_gcn(output_feat,output_feat,(kernel_size,seq_len)))
+        
         self.tpcnns = nn.ModuleList()
         self.tpcnns.append(nn.Conv2d(seq_len,pred_seq_len,3,padding=1))
         for j in range(1,self.n_txpcnn):
             self.tpcnns.append(nn.Conv2d(pred_seq_len,pred_seq_len,3,padding=1))
+        self.tpcnn_ouput = nn.Conv2d(pred_seq_len,pred_seq_len,3,padding=1)
             
             
         self.prelus = nn.ModuleList()
         for j in range(self.n_txpcnn):
             self.prelus.append(nn.PReLU())
 
-    def forward(self, v_s, a_s, v_t = None, a_t = None):
-        # v: (1, T_obs, num_peds, feat = 2) -> (1, 8, num_peds, 2)
-        v_s = self.relu(self.lin_proj(v_s)).permute(0,3,1,2)
-        if v_t is not None:
-            v_t = self.relu(self.lin_proj(v_t)).permute(0,3,1,2)
 
-        # v: (1, feat = 64, T_obs, num_peds) -> (1, 64, 8, num_peds)
-        for k in range(len(self.st_gcns) - 1):
-            v_s,a_s = self.st_gcns[k](v_s,a_s)
-        if v_t is not None:
-            for k in range(len(self.st_gcns) - 1):
-                v_t,a_t = self.st_gcns[k](v_t,a_t)
+        
+    def forward(self,v,a):
 
-        if v_t is not None:
-            L_align = self.adap_l(v_s, v_t)
-
-        v,a = self.st_gcns[-1](v_s,a_s)
-        # v: (1, feat = 5, T_obs, num_peds) -> (1, 5, 8, num_peds)
+        for k in range(self.n_stgcnn):
+            v,a = self.st_gcns[k](v,a)
+            
         v = v.view(v.shape[0],v.shape[2],v.shape[1],v.shape[3])
-        # v: (1, T_obs, feat=5, num_peds) -> (1, 8, 5, num_peds) 
-        # The reason for the reshape is, the TCNN module consider the temporal axis as the feature dimension.
-
+        
         v = self.prelus[0](self.tpcnns[0](v))
+
         for k in range(1,self.n_txpcnn-1):
             v =  self.prelus[k](self.tpcnns[k](v)) + v
             
-        v = v.view(v.shape[0],v.shape[2],v.shape[1],v.shape[3])        
-        if v_t is not None:
-            return v,a,L_align  # v: (1, out_feat, T_pred, num_peds) -> (1, 5, 12, num_peds), a has the same shape
+        v = self.tpcnn_ouput(v)
+        v = v.view(v.shape[0],v.shape[2],v.shape[1],v.shape[3])
+        
+        
         return v,a
-
-
-
-
-class adaptive_learning(nn.Module):
-    def __init__(self, feat_dim, seq_len) -> None:
-        super().__init__()
-        self.feat_dim = feat_dim
-
-        self.tanh = nn.Tanh()
-        self.W = nn.Linear(feat_dim*seq_len, feat_dim)
-        self.h = nn.Linear(feat_dim, 1)
-
-        self.softmax = nn.Softmax(dim=1)
-
-    def forward(self, Fs, Ft):
-        ''' 
-        Input shapes (1, feat = 64, T_obs, num_peds) turn them into,
-            Fs: Features of source domain (1, num_peds, seq_len (T_obs), feat_dim)
-            Ft: Features of traget domain (1, num_peds, seq_len (T_obs), feat_dim) '''
-        
-        Fs = Fs.permute(0, 3, 2, 1)
-        Ft = Ft.permute(0, 3, 2, 1)
-
-        Fs = Fs.reshape(Fs.shape[0], Fs.shape[1],  Fs.shape[2] *  Fs.shape[3])
-        Ft = Ft.reshape(Fs.shape[0], Ft.shape[1],  Ft.shape[2] *  Ft.shape[3])
-
-        beta_s = self.softmax(self.h(self.tanh(self.W(Fs))))
-        beta_t = self.softmax(self.h(self.tanh(self.W(Ft))))
-
-        c_s = torch.einsum('ijh,ijk->k', beta_s, Fs)
-        c_t = torch.einsum('ijh,ijk->k', beta_t, Ft)
-
-        L_align = torch.linalg.norm(c_s - c_t) / self.feat_dim
-
-        return L_align
-
-
-        
