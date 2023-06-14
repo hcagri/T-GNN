@@ -1,16 +1,6 @@
-import os
-import math
-import sys
-
 import torch
 import torch.nn as nn
-import numpy as np
-import torch.nn.functional as Func
-from torch.nn import init
-from torch.nn.parameter import Parameter
-from torch.nn.modules.module import Module
 
-import torch.optim as optim
 
 
 class spatial_attn(nn.Module):
@@ -95,6 +85,7 @@ class ConvTemporalGraphical(nn.Module):
     
 
 class st_gcn(nn.Module):
+    #Source : https://github.com/yysijie/st-gcn/blob/master/net/st_gcn.py
     r"""Applies a spatial temporal graph convolution over an input graph sequence.
     Args:
         in_channels (int): Number of channels in the input sequence data
@@ -203,7 +194,7 @@ class T_GNN(nn.Module):
 
         self.st_gcns = nn.ModuleList()
         self.st_gcns.append(st_gcn(feat_dim,feat_dim,(kernel_size,seq_len)))
-        for j in range(1,self.n_stgcnn-2):
+        for j in range(self.n_stgcnn-2):
             self.st_gcns.append(st_gcn(feat_dim,feat_dim,(kernel_size,seq_len)))
         self.st_gcns.append(st_gcn(feat_dim,output_feat,(kernel_size,seq_len)))
 

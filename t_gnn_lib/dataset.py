@@ -24,7 +24,7 @@ def anorm(p1,p2):
     NORM = math.sqrt((p1[0]-p2[0])**2+ (p1[1]-p2[1])**2)
     return NORM
                 
-def seq_to_graph(seq_,seq_rel,norm_lap_matr = False):
+def seq_to_graph(seq_,seq_rel):
     seq_ = seq_.squeeze()
     seq_rel = seq_rel.squeeze()
     seq_len = seq_.shape[2]
@@ -46,11 +46,6 @@ def seq_to_graph(seq_,seq_rel,norm_lap_matr = False):
                 l2_norm = anorm(step_rel[h],step_rel[k])
                 A[s,h,k] = l2_norm 
                 A[s,k,h] = l2_norm # Undirected graphs has symetric adjacency matrix
-        if norm_lap_matr: 
-            # Default: Do not goes into this loop in my implementation.
-            # Adjacency matrix is initialized with pair-wise distances of the pedestrians in each time step.
-            G = nx.from_numpy_matrix(A[s,:,:])
-            A[s,:,:] = nx.normalized_laplacian_matrix(G).toarray()
             
     return torch.from_numpy(V).type(torch.float),\
            torch.from_numpy(A).type(torch.float)
@@ -72,36 +67,6 @@ def decentralization(seg_list_rel_temp, obs_len):
 
     return seg_list_rel
 
-def bivariate_loss(V_pred,V_trgt):
-    #mux, muy, sx, sy, corr
-    #assert V_pred.shape == V_trgt.shape
-    normx = V_trgt[:,:,0]- V_pred[:,:,0]
-    normy = V_trgt[:,:,1]- V_pred[:,:,1]
-
-    sx = torch.exp(V_pred[:,:,2]) #sx
-    sy = torch.exp(V_pred[:,:,3]) #sy
-    corr = torch.tanh(V_pred[:,:,4]) #corr
-    
-    sxsy = sx * sy
-
-    z = (normx/sx)**2 + (normy/sy)**2 - 2*((corr*normx*normy)/sxsy)
-    negRho = 1 - corr**2
-
-    # Numerator
-    result = torch.exp(-z/(2*negRho))
-    # Normalization factor
-    denom = 2 * np.pi * (sxsy * torch.sqrt(negRho))
-
-    # Final PDF calculation
-    result = result / denom
-
-    # Numerical stability
-    epsilon = 1e-20
-
-    result = -torch.log(torch.clamp(result, min=epsilon))
-    result = torch.mean(result)
-    
-    return result
 
 
 def poly_fit(traj, traj_len, threshold):
@@ -135,6 +100,7 @@ def read_file(_path, delim='\t'):
 
 
 class TrajectoryDataset(Dataset):
+    ''' Source: https://github.com/agrimgupta92/sgan/blob/master/sgan/data/trajectories.py '''
     """Dataloder for the Trajectory datasets"""
     def __init__(
         self, data_dir, obs_len=8, pred_len=8, skip=1, threshold=0.002,
@@ -162,7 +128,6 @@ class TrajectoryDataset(Dataset):
         self.delim = delim
         self.norm_lap_matr = norm_lap_matr
 
-        print(self.data_dir)
         all_files = os.listdir(self.data_dir)
         all_files = [os.path.join(self.data_dir, _path) for _path in all_files]
         num_peds_in_seq = []
@@ -265,10 +230,10 @@ class TrajectoryDataset(Dataset):
 
             start, end = self.seq_start_end[ss]
 
-            v_,a_ = seq_to_graph(self.obs_traj[start:end,:],self.obs_traj_rel[start:end, :],self.norm_lap_matr) # v_: shape (seq_len, num_peds, (x,y)) | a_: shape (seq_len, num_peds, num_peds)
+            v_,a_ = seq_to_graph(self.obs_traj[start:end,:],self.obs_traj_rel[start:end, :]) # v_: shape (seq_len, num_peds, (x,y)) | a_: shape (seq_len, num_peds, num_peds)
             self.v_obs.append(v_.clone())
             self.A_obs.append(a_.clone())
-            v_,a_=seq_to_graph(self.pred_traj[start:end,:],self.pred_traj_rel[start:end, :],self.norm_lap_matr)
+            v_,a_=seq_to_graph(self.pred_traj[start:end,:],self.pred_traj_rel[start:end, :])
             self.v_pred.append(v_.clone())
             self.A_pred.append(a_.clone())
         pbar.close()
