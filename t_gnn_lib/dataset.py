@@ -22,13 +22,15 @@ import time
 
 def anorm(p1,p2): 
     NORM = math.sqrt((p1[0]-p2[0])**2+ (p1[1]-p2[1])**2)
-    return NORM
+    if NORM ==0:
+        return 0
+    return 1/NORM
                 
-def seq_to_graph(seq_,seq_rel):
-    seq_ = seq_.squeeze()
+def seq_to_graph(seq_rel):
+
     seq_rel = seq_rel.squeeze()
-    seq_len = seq_.shape[2]
-    max_nodes = seq_.shape[0]
+    seq_len = seq_rel.shape[2]
+    max_nodes = seq_rel.shape[0]
 
     # For each time step, we must have a Graph. So total we will have seq_len graphs: 8 default.
     V = np.zeros((seq_len,max_nodes,2))
@@ -36,13 +38,12 @@ def seq_to_graph(seq_,seq_rel):
     for s in range(seq_len):
         # So create seg_len number of graphs
         # step_: Stores the positions of the pedestrians for each time step. shape: (num_peds, 2 (x,y))
-        step_ = seq_[:,:,s] # The shape of seq_: (num_peds, 2(x,y), seq_len). Take the each time stemp in a sequence iteratively.
-        step_rel = seq_rel[:,:,s]
-        for h in range(len(step_)): 
+        step_rel = seq_rel[:,:,s] # The shape of seq_: (num_peds, 2(x,y), seq_len). Take the each time stemp in a sequence iteratively.
+        for h in range(len(step_rel)): 
             # Iterate for each pedestrian 
             V[s,h,:] = step_rel[h]
             A[s,h,h] = 0 
-            for k in range(h+1,len(step_)):
+            for k in range(h+1,len(step_rel)):
                 l2_norm = anorm(step_rel[h],step_rel[k])
                 A[s,h,k] = l2_norm 
                 A[s,k,h] = l2_norm # Undirected graphs has symetric adjacency matrix
@@ -67,8 +68,6 @@ def decentralization(seg_list_rel_temp, obs_len):
 
     return seg_list_rel
 
-
-
 def poly_fit(traj, traj_len, threshold):
     """
     Input:
@@ -85,6 +84,7 @@ def poly_fit(traj, traj_len, threshold):
         return 1.0
     else:
         return 0.0
+    
 def read_file(_path, delim='\t'):
     data = []
     if delim == 'tab':
@@ -230,10 +230,10 @@ class TrajectoryDataset(Dataset):
 
             start, end = self.seq_start_end[ss]
 
-            v_,a_ = seq_to_graph(self.obs_traj[start:end,:],self.obs_traj_rel[start:end, :]) # v_: shape (seq_len, num_peds, (x,y)) | a_: shape (seq_len, num_peds, num_peds)
+            v_,a_ = seq_to_graph(self.obs_traj_rel[start:end, :]) # v_: shape (seq_len, num_peds, (x,y)) | a_: shape (seq_len, num_peds, num_peds)
             self.v_obs.append(v_.clone())
             self.A_obs.append(a_.clone())
-            v_,a_=seq_to_graph(self.pred_traj[start:end,:],self.pred_traj_rel[start:end, :])
+            v_,a_=seq_to_graph(self.pred_traj_rel[start:end, :])
             self.v_pred.append(v_.clone())
             self.A_pred.append(a_.clone())
         pbar.close()
@@ -245,11 +245,7 @@ class TrajectoryDataset(Dataset):
         start, end = self.seq_start_end[index]
 
         out = [
-            self.obs_traj[start:end, :], self.pred_traj[start:end, :],
-            self.obs_traj_rel[start:end, :], self.pred_traj_rel[start:end, :],
-            self.non_linear_ped[start:end], self.loss_mask[start:end, :],
             self.v_obs[index], self.A_obs[index],
             self.v_pred[index], self.A_pred[index]
-
         ]
         return out

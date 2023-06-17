@@ -36,6 +36,9 @@ def main(_config, _run):
         skip=1
         )
     
+    print(source_dset.max_peds_in_frame)
+    print('num_seq: ', source_dset.num_seq)
+    
     source_loader = DataLoader(
         source_dset, 
         batch_size=1,
@@ -68,6 +71,8 @@ def main(_config, _run):
         kernel_size  = model_args['kernel_size']
         ).cuda()
 
+    print(model)
+
     optimizer = optim.Adam(model.parameters(), lr= _config['training']['lr'])
     loss_fn = bivariate_loss
 
@@ -88,11 +93,11 @@ def main(_config, _run):
             constant_metrics['min_val_epoch'] = epoch 
             constant_metrics['min_val_loss'] = val_loss
 
-            torch.save(model.state_dict(), os.path.join(run_path, 'checkpoints', f'epoch_{epoch}.pth'))
+            torch.save(model.state_dict(), os.path.join(run_path, 'checkpoints', f'epoch_{epoch+1}.pth'))
         
         else:
-            if epoch%5 == 0:
-                torch.save(model.state_dict(), os.path.join(run_path, 'checkpoints', f'epoch_{epoch}.pth'))
+            if (epoch+1)%5 == 0:
+                torch.save(model.state_dict(), os.path.join(run_path, 'checkpoints', f'epoch_{epoch+1}.pth'))
 
 
     print('\n\n END of TRAINING \n\n')

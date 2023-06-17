@@ -110,7 +110,7 @@ class st_gcn(nn.Module):
                  in_channels,
                  out_channels,
                  kernel_size,
-                 use_mdn = False,
+                 use_mdn = True,
                  stride=1,
                  dropout=0,
                  residual=True):
@@ -186,56 +186,71 @@ class T_GNN(nn.Module):
         self.n_stgcnn= n_stgcnn
         self.n_txpcnn = n_txpcnn
 
-
         self.lin_proj = nn.Linear(input_feat, feat_dim)
+        self.lin_proj_2 = nn.Linear(feat_dim, output_feat)
         self.relu = nn.ReLU()
 
         self.adap_l = adaptive_learning(feat_dim, seq_len)
 
         self.st_gcns = nn.ModuleList()
         self.st_gcns.append(st_gcn(feat_dim,feat_dim,(kernel_size,seq_len)))
-        for j in range(self.n_stgcnn-2):
+        for _ in range(self.n_stgcnn-2):
             self.st_gcns.append(st_gcn(feat_dim,feat_dim,(kernel_size,seq_len)))
-        self.st_gcns.append(st_gcn(feat_dim,output_feat,(kernel_size,seq_len)))
+        self.st_gcns.append(st_gcn(feat_dim,feat_dim,(kernel_size,seq_len)))
 
 
         self.tpcnns = nn.ModuleList()
         self.tpcnns.append(nn.Conv2d(seq_len,pred_seq_len,3,padding=1))
-        for j in range(1,self.n_txpcnn):
+        for _ in range(1,self.n_txpcnn):
             self.tpcnns.append(nn.Conv2d(pred_seq_len,pred_seq_len,3,padding=1))
             
             
         self.prelus = nn.ModuleList()
-        for j in range(self.n_txpcnn):
+        for _ in range(self.n_txpcnn):
             self.prelus.append(nn.PReLU())
 
+
     def forward(self, v_s, a_s, v_t = None, a_t = None):
+
+        ''' Feature Projection '''
         # v: (1, T_obs, num_peds, feat = 2) -> (1, 8, num_peds, 2)
         v_s = self.relu(self.lin_proj(v_s)).permute(0,3,1,2)
+        
         if v_t is not None:
             v_t = self.relu(self.lin_proj(v_t)).permute(0,3,1,2)
 
+
+        ''' Spatial-Temporal Feature Extraction '''
         # v: (1, feat = 64, T_obs, num_peds) -> (1, 64, 8, num_peds)
-        for k in range(len(self.st_gcns) - 1):
+        for k in range(len(self.st_gcns)):
             v_s,a_s = self.st_gcns[k](v_s,a_s)
         if v_t is not None:
-            for k in range(len(self.st_gcns) - 1):
+            for k in range(len(self.st_gcns)):
                 v_t,a_t = self.st_gcns[k](v_t,a_t)
 
+
+        ''' Attention-Based Adaptive Learning '''
         if v_t is not None:
             L_align = self.adap_l(v_s, v_t)
 
-        v,a = self.st_gcns[-1](v_s,a_s)
-        # v: (1, feat = 5, T_obs, num_peds) -> (1, 5, 8, num_peds)
-        v = v.view(v.shape[0],v.shape[2],v.shape[1],v.shape[3])
-        # v: (1, T_obs, feat=5, num_peds) -> (1, 8, 5, num_peds) 
-        # The reason for the reshape is, the TCNN module consider the temporal axis as the feature dimension.
 
+        ''' Temporal Prediction Module '''
+        # v: (1, feat = 64, T_obs, num_peds) -> (1, 64, 8, num_peds)
+        v = v_s.permute(0, 2, 1, 3)
+        a = a_s
+        # v: (1, T_obs, feat=64, num_peds) -> (1, 8, 64, num_peds) 
+        # The reason for the reshape is, the TCNN module consider the temporal axis as the feature dimension.
         v = self.prelus[0](self.tpcnns[0](v))
-        for k in range(1,self.n_txpcnn-1):
+        for k in range(1,self.n_txpcnn):
             v =  self.prelus[k](self.tpcnns[k](v)) + v
-            
-        v = v.view(v.shape[0],v.shape[2],v.shape[1],v.shape[3])        
+
+        # v: (1, T_pred, feat=64, num_peds)  
+        v = v.permute(0, 1, 3, 2)
+        # v: (1, T_pred, num_peds, feat=64)
+
+        v = self.lin_proj_2(v)
+        # v: (1, T_pred, num_peds, feat=5)
+        
         if v_t is not None:
             return v,a,L_align  # v: (1, out_feat, T_pred, num_peds) -> (1, 5, 12, num_peds), a has the same shape
         return v,a
@@ -272,7 +287,7 @@ class adaptive_learning(nn.Module):
         c_s = torch.einsum('ijh,ijk->k', beta_s, Fs)
         c_t = torch.einsum('ijh,ijk->k', beta_t, Ft)
 
-        L_align = torch.linalg.norm(c_s - c_t) / self.feat_dim
+        L_align = torch.linalg.norm(c_s - c_t)**2 / self.feat_dim
 
         return L_align
 
