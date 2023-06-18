@@ -80,6 +80,18 @@ My goal in this project is to reproduce the ade/fde results for only some of the
 4. Final feature representations of source and target trajectory domains $c_{s} \in \mathbb{R}^{D_v}$ and $c_{t} \in \mathbb{R}^{D_v}$ are calculated as $`c_{(s)} \sum_{i=1}^{N^s} (\beta_{(s)}^i f_{(s)}^i)`$ and $`c_{(t)} \sum_{i=1}^{N^t} (\beta_{(t)}^i f_{(t)}^i)`$
 5. Similarity Loss for distribution alignment is calculated as $`\mathcal{L}_{align} = \frac{1}{D_f} || c_{(s)} - c_{(t)} ||_2^2`$
 
+**Temporal Prediction Module**
+- Instead of making predictions frame by frame, TCN layers are employed to make future trajectory predictions based on the spatial-temporal feature representations F(s) from source trajectory domain.
+- This prediction strategy is able to alleviate the error accumulating problem in sequential predictions caused by RNNs. It can also avoid gradient vanishing or reduce high computational costs.
+- Formally in TCB layer we have $`F^{(l+1)}_{(s)} = TCN(F^{(l)}_{(s)};W_t^{(l)})`$
+    - $`F^{(l+1)} \in \mathbb{R}^{N^s \times D_f \times L_{pred}}`$ 
+- An assumption is made that pedestrian coordinates follow a bivariate Gaussian distribution. So the model outputs 5 scalar namely; mean_x, mean_y, std_x, std_y and correlation coefficient.
+
+**Objective Function**
+- Consists of two terms
+    1. Prediction Loss
+    2. Alignment Loss
+- Whole model is trained with $`\mathcal{L} = \mathcal{L}_{pre} + \lambda \mathcal{L}_{align}`$
 
 
 ## 2.2. Our interpretation 
