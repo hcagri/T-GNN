@@ -31,16 +31,9 @@ My goal in this project is to reproduce the ade/fde results for only some of the
 
 
 
-
-
-@TODO: Summarize the paper, the method & its contributions in relation with the existing literature.
-
-
-
 # 2. The method and my interpretation
 
 ## 2.1. The original method
-@TODO: Explain the original method.
 
 - Given one pedestrian with observed trajectory, the aim is to predict the future trajectory.
 	- The goal is to predict trajectories of all the pedestrians simultaneously.
@@ -96,7 +89,6 @@ My goal in this project is to reproduce the ade/fde results for only some of the
 
 ## 2.2. Our interpretation 
 
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
 
 1. In the above section I have explain in `Graph definition and model` that the adjacency matrix is updated using graph attention network. The adjacency matrix for a particular frame has a shape of NxN, where N is the number of pedestrians exists on the scene at time t. That N changes as scene changes, so it is not clear how can we perform weight-shared attention model with a learnable parameter W with a shape of 1x2N, when N is not constant. 
     - So to solve this problem I use larger N as the maximum number of pedestrians that can exists on any scene, then for a scene with smaller number of pedestrians I zero pad the adjacancy matrix. Graph attention network is performed on zero padded Adjacancy matrix and the the portion of the new adjacency matrix is returned (A_new = A_padded[:num_pedestrians, :num_pedestrians])
@@ -110,23 +102,22 @@ My goal in this project is to reproduce the ade/fde results for only some of the
 
 ## 3.1. Experimental setup
 
-@TODO: Describe the setup of the original paper and whether you changed any settings.
 Setup of the original paper,
-    - 8 frames are observed, 12 frames are predicted
-    - Number of GCN layers = 3
-    - Number of TCN layers = 3
-    - Feature Dimension = 64
-    - Batch Size = 16
-    - $`\lambda = 1`$ 
-    - Epoch = 200
-    - Optimizer = Adam
-    - Initial Learning Rate = 0.001 and changed to 0.0005 after 100 epochs
-    - In inference
-        - 20 predicted trajectories are sampled and the best among 20 predictions is used for evaluations.\
-`Note:` I have only changed the batch size, and use 32 to observe as much as pedestrians before calculating the alignment loss to better represent the trajectory domain.
+- 8 frames are observed, 12 frames are predicted
+- Number of GCN layers = 3
+- Number of TCN layers = 3
+- Feature Dimension = 64
+- Batch Size = 16
+- $`\lambda = 1`$ 
+- Epoch = 200
+- Optimizer = Adam
+- Initial Learning Rate = 0.001 and changed to 0.0005 after 100 epochs
+- In inference
+    - 20 predicted trajectories are sampled and the best among 20 predictions is used for evaluations.\
+`Note:` I have only changed the batch size, and use 32 to observe as much as pedestrians before calculating the alignment loss to better represent the trajectory domains.
 
 ## 3.2. Running the code
-@TODO: Explain your code & directory structure and how other people can run it.
+
 1.  Overall, the expected folder structure is:
 ```
 ├── dataset
@@ -176,11 +167,11 @@ conda activate py_cuda
 |ade/fde  | 3.49/3.8  | 2.28/2.99 | 1.62/1.89 | 1.05/1.54  | 3.48/2.97 |
 <p align="center">Table 1: Reproduced Results </p>
 
-`Comparison:` The results obtained from the reproduction of the model exhibit a noticeable discrepancy when compared to the original results. While the reproduced results are not entirely unfavorable, they do indicate that the model is learning to some extent. However, it is important to acknowledge the possibility of missing implementation details or misunderstandings that may have influenced the outcome.
+`Comparison:` The results obtained from the reproduction of the model exhibit a noticeable discrepancy when compared to the original results. While the reproduced results are not entirely unfavorable, they do indicate that the model is learning. However, it is important to acknowledge the possibility of missing implementation details or misunderstandings that may have influenced the outcome. And also, it is mentioned in the experimental setting of the paper that the model is trained on `only one` domain and tested on other domains. So the amount of data that model consumes is very limited in this setup, if I understood correctly.
 
 # 4. Conclusion
 
-- The main reason for the discrepancies in the results may stem from assumptions made during the implementation of parts that were not clearly explained. It is possible that there was a misunderstanding of the decentralization operation or a missed detail. To test the effect of the decentralization operation, I also applied it to another trajectory prediction model called Social-STGCNN. Surprisingly, the results indicated that the decentralization operation performed poorly compared to the use of relative coordinates in that model. However, it should be noted that using the decentralization operation still produced better results than using raw coordinates of pedestrians.
+- The main reason for the discrepancies in the results may come from assumptions made during the implementation of parts that were not clearly explained. It is possible that there was a misunderstanding of the decentralization operation or a missed detail. To test the effect of the decentralization operation, I also applied it to another trajectory prediction model called Social-STGCNN. Surprisingly, the results indicated that the decentralization operation performed poorly compared to the use of relative coordinates in that model. However, it should be noted that using the decentralization operation still produced better results than using raw coordinates of pedestrians.
 
 - Furthermore, the original paper lacked sufficient explanations for updating the adjacency matrix with a graph attention network. To address this issue, I developed a solution as described in section 2.2 of my work. Although this solution led to improved ade/fde results, they were not comparable to the original results reported in the paper.
 
