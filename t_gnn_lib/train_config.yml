@@ -13,8 +13,8 @@ model:
   kernel_size: 3
 
 training: 
-  batch_size: 16
+  batch_size: 64
   num_epochs: 200
   lambda: 1         # hyperparmeter to balance loss terms
-  lr: 0.001
+  lr: 0.01
   change_lr: 100    # Change learning rate after 100 epochs

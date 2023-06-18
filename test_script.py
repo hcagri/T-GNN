@@ -41,7 +41,7 @@ def main(_config, _run):
     test_loader = DataLoader(
         test_dset, 
         batch_size=1,
-        shuffle=True,
+        shuffle=False,
         num_workers=2
     )
 
@@ -58,6 +58,7 @@ def main(_config, _run):
 
     model.load_state_dict(torch.load(_config['model_path']))
 
-    ade, fde = evaluate(model, test_loader, _config)
+    ade_r, fde_r = evaluate(model, test_loader, _config)
+    # ade_r, fde_r = test_test(model, test_loader)
 
-    print(f"Results: \nade:{ade}, fde:{fde}")
+    print(f"Results: \nade:{ade_r}, fde:{fde_r}")

@@ -13,11 +13,11 @@ model:
   kernel_size: 3
 
 training: 
-  batch_size: 16
+  batch_size: 128
   num_epochs: 200
-  lambda: 0         # hyperparmeter to balance loss terms
+  lambda: 1         # hyperparmeter to balance loss terms
   lr: 0.001
   change_lr: 100    # Change learning rate after 100 epochs
 
 
-model_path: experiments/training/13/checkpoints/epoch_200.pth
+model_path: experiments/training/69/checkpoints/epoch_200.pth

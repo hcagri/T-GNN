@@ -1,34 +1,40 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+
+import torch_geometric as pyg
+from torch_geometric.data import Data
+from torch_geometric.nn import GATConv
+from torch_geometric.utils import dense_to_sparse
 
 
+class GraphAttentionModule(nn.Module):
+    def __init__(self, max_num_peds=100):
+        super(GraphAttentionModule, self).__init__()
 
-class spatial_attn(nn.Module):
-    def __init__(self, num_peds):
-        super(spatial_attn).__init__()
+        self.max_num_peds = max_num_peds
+        self.gat_conv = GATConv(max_num_peds, max_num_peds, 4, concat=False)
+        self.lrelu = nn.LeakyReLU(0.2)
+
+    def forward(self, A):  
+        # For each time stemp we have an adjacency matrix, shape of A: (T_obs, num_peds, num_peds)
+        num_peds = A.size(2)
+
+        # Create edge_index to perform graph attention layer, assume fully connected graph
+        adj_matrix = torch.ones(num_peds, num_peds) - torch.eye(num_peds)
+        edge_index, _ = dense_to_sparse(adj_matrix.cuda())
         
-        self.W = nn.Linear(2*num_peds, 1)
-        self.lrelu = nn.LeakyReLU(0.2) 
-        self.softmax = nn.Softmax(dim=1)
+        new_A = torch.zeros_like(A)
 
-    def forward(self, A):
-        '''
-        A: (seq_len, num_peds, num_peds)
-        '''
-        num_peds = A.shape[2]
-        new_adjs = []
-        for a_ in A:
-            
-            a_ = a_.T
-            a_rep1 = a_.repeat_interleave(num_peds, 0)
-            a_rep2 = a_.repeat(num_peds, 1, 1).view(-1, num_peds)
-            a_concat = torch.cat([a_rep1, a_rep2], dim=1).view(num_peds,num_peds,2*num_peds)
-            e = self.lrelu(self.W(a_concat))
-            alpha = self.softmax(e)
-            attn_res = torch.einsum('ijh,jhf->ihf', alpha, a_)
-            new_adjs.append(attn_res)
+        for idx, A_t in enumerate(A): 
+            # each colum vector of A is our feature vector. So make them row vector to feed them into torch geometric
+            x = A_t.T
+            # Pad them with zeros, since number of pedestrians in each scene differs. 
+            x = F.pad(x, (0, self.max_num_peds - num_peds))
+            x = self.lrelu(self.gat_conv(x, edge_index))
+            new_A[idx,:,:] = x.T[:num_peds, :num_peds] + torch.eye(num_peds).cuda()
         
-        return torch.stack(new_adjs, dim=0)
+        return new_A
 
         
 class ConvTemporalGraphical(nn.Module):
@@ -180,7 +186,8 @@ class T_GNN(nn.Module):
                  output_feat=5,
                  seq_len=8,
                  pred_seq_len=12,
-                 kernel_size=3
+                 kernel_size=3, 
+                 max_num_peds = 100
                  ):
         super(T_GNN,self).__init__()
         self.n_stgcnn= n_stgcnn
@@ -190,13 +197,13 @@ class T_GNN(nn.Module):
         self.lin_proj_2 = nn.Linear(feat_dim, output_feat)
         self.relu = nn.ReLU()
 
-        self.adap_l = adaptive_learning(feat_dim, seq_len)
+        self.graph_attn_module = GraphAttentionModule(max_num_peds)
+        self.attention_module = adaptive_learning(feat_dim, seq_len)
 
         self.st_gcns = nn.ModuleList()
         self.st_gcns.append(st_gcn(feat_dim,feat_dim,(kernel_size,seq_len)))
-        for _ in range(self.n_stgcnn-2):
+        for _ in range(1, self.n_stgcnn):
             self.st_gcns.append(st_gcn(feat_dim,feat_dim,(kernel_size,seq_len)))
-        self.st_gcns.append(st_gcn(feat_dim,feat_dim,(kernel_size,seq_len)))
 
 
         self.tpcnns = nn.ModuleList()
@@ -212,11 +219,16 @@ class T_GNN(nn.Module):
 
     def forward(self, v_s, a_s, v_t = None, a_t = None):
 
+        # To measure the relative importance of dynamic spatial relations between pedestrians, the graph attention layer 
+        # from [67] is adopted here to update the adjacency matrix
+        a_s = self.graph_attn_module(a_s)
+
         ''' Feature Projection '''
         # v: (1, T_obs, num_peds, feat = 2) -> (1, 8, num_peds, 2)
         v_s = self.relu(self.lin_proj(v_s)).permute(0,3,1,2)
         
         if v_t is not None:
+            a_t = self.graph_attn_module(a_t)
             v_t = self.relu(self.lin_proj(v_t)).permute(0,3,1,2)
 
 
@@ -229,14 +241,9 @@ class T_GNN(nn.Module):
                 v_t,a_t = self.st_gcns[k](v_t,a_t)
 
 
-        ''' Attention-Based Adaptive Learning '''
-        if v_t is not None:
-            L_align = self.adap_l(v_s, v_t)
-
-
         ''' Temporal Prediction Module '''
         # v: (1, feat = 64, T_obs, num_peds) -> (1, 64, 8, num_peds)
-        v = v_s.permute(0, 2, 1, 3)
+        v = v_s.permute(0, 2, 1, 3).clone()
         a = a_s
         # v: (1, T_obs, feat=64, num_peds) -> (1, 8, 64, num_peds) 
         # The reason for the reshape is, the TCNN module consider the temporal axis as the feature dimension.
@@ -252,7 +259,7 @@ class T_GNN(nn.Module):
         # v: (1, T_pred, num_peds, feat=5)
         
         if v_t is not None:
-            return v,a,L_align  # v: (1, out_feat, T_pred, num_peds) -> (1, 5, 12, num_peds), a has the same shape
+            return v, a, v_s, v_t.clone()  # v: (1, out_feat, T_pred, num_peds) -> (1, 5, 12, num_peds), a has the same shape
         return v,a
 
 
@@ -287,7 +294,7 @@ class adaptive_learning(nn.Module):
         c_s = torch.einsum('ijh,ijk->k', beta_s, Fs)
         c_t = torch.einsum('ijh,ijk->k', beta_t, Ft)
 
-        L_align = torch.linalg.norm(c_s - c_t)**2 / self.feat_dim
+        L_align = torch.linalg.norm(c_s - c_t) / self.feat_dim
 
         return L_align
 
