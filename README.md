@@ -7,7 +7,7 @@ Puplished at *CVPR 2022*\
 `Authors:`
 Yi Xu, Lichen Wang, Yizhou Wang, Yun Fu
 
-My goal in this project is to reproduce the ade/fde results for only some of the source-target domain pairs shared in Tables 2,3 and 6 in the paper. As explanined in the experimental settings, I will be treating each scene as one trajectory domain and the reproduced model is trained on only one domain and tested on another domain.
+My goal in this project is to reproduce the ade/fde results for only some of the source-target domain pairs shared in Tables 2,3 and 6 in the paper. As explanined in the experimental settings, I will be treating each scene as one trajectory domain and the reproduced model will be trained on only one domain and tested on another domain.
 
 
 ## 1.1. Paper summary
@@ -99,10 +99,10 @@ My goal in this project is to reproduce the ade/fde results for only some of the
 @TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
 
 1. In the above section I have explain in `Graph definition and model` that the adjacency matrix is updated using graph attention network. The adjacency matrix for a particular frame has a shape of NxN, where N is the number of pedestrians exists on the scene at time t. That N changes as scene changes, so it is not clear how can we perform weight-shared attention model with a learnable parameter W with a shape of 1x2N, when N is not constant. 
-    - So to solve this problem I use larger N as the maximum number of pedestrians that can exists on any scene, then for s scene with smaller number of pedestrians I zero pad the adjacancy matrix. Graph attention network is performed on zero padded Adjacancy matrix and the the portion of the new adjacency matrix is returned (A_new = A_padded[:num_pedestrians, :num_pedestrians])
+    - So to solve this problem I use larger N as the maximum number of pedestrians that can exists on any scene, then for a scene with smaller number of pedestrians I zero pad the adjacancy matrix. Graph attention network is performed on zero padded Adjacancy matrix and the the portion of the new adjacency matrix is returned (A_new = A_padded[:num_pedestrians, :num_pedestrians])
 
 2. In `Attention Based Adaptive Learning` part it is said that the single pedestrian is not representative for the whole trajectory and each iteration mostly we have very few number of pedestrians exists on the scene, but we also need to use the allignment loss while updating the model. So it was not clear to me when this loss is calculated. Because to obtain a representative feature vector of the trajectory domain, we should observe as much as pedestrians as we could.
-    - So I assume it would be wise to calculate at the end of each batch. So in each batch I collected the feature representations of each pedestrian before passing them to temporal prediction module. (Batch and iteration is not corresponding to same thing when working with graph structured data, since in each iteration I can only process one graph at a time in this model.)
+    - So I assume it would be wise to calculate at the end of each batch. So in each iteration I collected the feature representations of each pedestrian before passing them to temporal prediction module, and calculate the allignment loss at the of the batch. (Batch and iteration is not corresponding to same thing when working with graph structured data, since in each iteration I can only process one graph at a time in this model.)
 
 3. Decentralization operation explained in `Spatial-Temporal Feature Representations` section is not explained clearly. So I also checked the referenced papers also using this strategy. I have implemented the equation provided but the results were better when we use relative differences between coordinates, as most of the previous approaches employed.
 
@@ -111,10 +111,61 @@ My goal in this project is to reproduce the ade/fde results for only some of the
 ## 3.1. Experimental setup
 
 @TODO: Describe the setup of the original paper and whether you changed any settings.
+Setup of the original paper,
+    - 8 frames are observed, 12 frames are predicted
+    - Number of GCN layers = 3
+    - Number of TCN layers = 3
+    - Feature Dimension = 64
+    - Batch Size = 16
+    - $`\lambda = 1`$ 
+    - Epoch = 200
+    - Optimizer = Adam
+    - Initial Learning Rate = 0.001 and changed to 0.0005 after 100 epochs
+    - In inference
+        - 20 predicted trajectories are sampled and the best among 20 predictions is used for evaluations.\
+`Note:` I have only changed the batch size, and use 32 to observe as much as pedestrians before calculating the alignment loss to better represent the trajectory domain.
 
 ## 3.2. Running the code
-
 @TODO: Explain your code & directory structure and how other people can run it.
+```
+├── dataset
+    ├── A
+    │   ├── A_B
+    │   │   ├── test
+    │   │   │   └── biwi_hotel.txt
+    │   │   ├── train
+    │   │   │   └── biwi_eth_train.txt
+    │   │   └── val
+    │   │       └── biwi_hotel_val.txt
+    │   ├── ...
+    ├── ...
+├── experiments
+    ├── test
+    │   ├── 1
+    │   │   ├── checkpoints
+    │   │   ├── ...
+    └── training
+        ├── 1
+        │   ├── checkpoints
+        │       └── epoch_200.pth
+        │   ├── config.json
+        │   ├── cout.txt
+        │   ├── loss_arr_train.npy
+        │   ├── loss_arr_val.npy
+        │   ├── metrics.json
+        │   └── run.json
+        ├── ...
+├── t_gnn_lib
+    ├── dataset.py
+    ├── __init__.py
+    ├── model.py
+    ├── train_helpers.py
+    └── utils.py
+├── README.md
+├── test_script.py
+├── train_script.py
+├── train_config.yml
+```
 
 ## 3.3. Results
 
