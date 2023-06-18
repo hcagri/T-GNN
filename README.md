@@ -77,11 +77,8 @@ My goal in this project is to reproduce the ade/fde results for only some of the
 	- $F_{(t)} = \big[ f_{(t)}^1, f_{(t)}^2, ..., f_{(t)}^{N^t} \big], f_{(t)}^i \in \mathbb{R}^{D_f \times L_{obs}}$
 2. Reshape those feature maps $f_{(s)}$ to vector of size $\mathbb{R}^{D_v}$, where $D_v = D_f \times L_{obs}$ 
 3. $$\beta _{(s)}^i = \frac{exp(h^T\ tanh(W_ff^i_{(s)}))}{\sum_{j=1}^{N^s} exp(h^T\ tanh(W_ff^i_{(s)}))}$$
-4. Final feature representations of source and target trajectory domains $c_{s} \in \mathbb{R}^{D_v}$ and $c_{t} \in \mathbb{R}^{D_v}$ are calculated as 
-- $c_{(s)} \sum_{i=1}^{N^s} (\beta_{(s)}^i f_{(s)}^i)$  
-- $c_{(t)} \sum_{i=1}^{N^t} (\beta_{(t)}^i f_{(t)}^i)$
-5. Similarity Loss for distribution alignment is calculated as 
-- $\mathcal{L}_{align} = \frac{1}{D_f} || c_{(s)} - c_{(t)} ||_2^2$
+4. Final feature representations of source and target trajectory domains $c_{s} \in \mathbb{R}^{D_v}$ and $c_{t} \in \mathbb{R}^{D_v}$ are calculated as $c_{(s)} \sum_{i=1}^{N^s} (\beta_{(s)}^i f_{(s)}^i)$ and $c_{(t)} \sum_{i=1}^{N^t} (\beta_{(t)}^i f_{(t)}^i)$
+5. Similarity Loss for distribution alignment is calculated as $\mathcal{L}_{align} = \frac{1}{D_f} || c_{(s)} - c_{(t)} ||_2^2$
 
 
 
