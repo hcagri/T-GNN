@@ -63,13 +63,12 @@ My goal in this project is to reproduce the ade/fde results for only some of the
         - We have also adjacency matrix $A_t \in \mathbb{R}^{N \times N}$ Initialized as the distances between pedestrians $i$ and $j$ $$a_{t;i,j} = ||o^{'i}_t - o^{'j}_t||_2$$
 		    - They argue that this L2 distance is more appropriate.
 
-        - Graph Attention Network is used, attention coefficients are calculated as; 
-        $\alpha_{t;i,j} = \frac{exp(\phi(\boldsymbol{W_l}[\boldsymbol{a}_{t;i} \bigoplus \boldsymbol{a}_{t;j}]))}{\sum_{j=1}^N exp(\phi(\boldsymbol{W_l} [\boldsymbol{a}_{t;i} \bigoplus \boldsymbol{a}_{t;j}]))}$
-            - $\boldsymbol{a}_{t;i} \in \mathbb{R}^{N \times 1}$  is $i^{th}$ column vector in $A_t$ 
-            - $\boldsymbol{W}_l \in \mathbb{R}^{1 \times 2N}$: Learnable parameters
+        - Graph Attention Network is used, attention coefficients are calculated as; $$\alpha_{t;i,j} = \frac{exp(\phi(W_l[a_{t;i} \bigoplus a_{t;j}]))}{\sum_{j=1}^N exp(\phi(W_l [a_{t;i} \bigoplus a_{t;j}]))}$$
+            - $a_{t;i} \in \mathbb{R}^{N \times 1}$  is $i^{th}$ column vector in $A_t$ 
+            - $W_l \in \mathbb{R}^{1 \times 2N}$: Learnable parameters
             - $\bigoplus$: Represents concatenation, in row
             - $\phi$: LeakyReLU with $\theta = 0.2$ 
-        - Linear combination $p_{t;i}$ computed as; $$p_{t;i} = \sigma \bigg( \sum_{j=1}^N \alpha_{t;i,j} \boldsymbol{a}_{t;j} \bigg)$$
+        - Linear combination $p_{t;i}$ computed as; $$p_{t;i} = \sigma \bigg( \sum_{j=1}^N \alpha_{t;i,j} \boldsymbol{a}_{t;j}\bigg)$$
 		    - With each `column vector` $p_{t;i}$ concatenated together, we obtain the new updated adjacency matrix $A_t'$, `which contains the information of global spatial features of pedestrians at time step t`
         - GCN Layers ($l=3$), we stack matrices from time step $T_1$ to $T_{obs}$
             - $\hat{A} = \{ \hat{A}_1,\hat{A}_2,..., \hat{A}_{obs}\} \in \mathbb{R}^{N \times N\times L_{obs}}$  
