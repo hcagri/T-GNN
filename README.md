@@ -19,7 +19,7 @@ My goal in this project is to reproduce the ade/fde results for only some of the
 
 <br>
 
-<p align="center"><img src="figures/figure_1.png" alt="Model" style="height: 280px; width:490px;"/></p>
+<p align="center"><img src="figures/domain_gap.png" alt="Model" style="height: 280px; width:490px;"/></p>
 
 - The original strategy is to learn these two samples together without considering distribution differences, which introduces domain-bias and disparities into the model.
 - The basic idea is to minimize the distance of distributions of source and target domains via some distance measures but the most popular domain adaptation approaches are not applicable here since there is no general feature to utilize. Instead a “sample” in this task is a combination of multiple trajectories with different pedestrians.
@@ -53,18 +53,34 @@ My goal in this project is to reproduce the ade/fde results for only some of the
 - Before constructing the graph. coordinates of all pedestrians are firstly passed through `decentralization` layer, which eliminates the effects of scene size differences. Where i represents the pedestrian id, $o_{obs}^i$ represents location of pedestrian i at obs time, N is the total number of pedestrians in the scene. $$o_t^{'i} = o^i_t - \frac{1}{N} \sum_{i=1}^N o_{obs}^i$$
 
 
-- Graph Definition and Model
-    - For each time step, one graph is constructed $G_t = (V_t, E_t, F_t)$. Each vertex represents one pedestrian at time t, and edge set indicates relationship associated with each pedestrian. For each vertex a feature vector (x,y locations) is association. For the same scene (from 0 to T_obs) those graphs are concatenated to form spatio-temporal graph representation.
+**Graph Definition and Model**
 
-    - We have also adjacency matrix $A_t \in \mathbb{R}^{N \times N}$ Initialized as the distances between pedestrians $i$ and $j$. They argue that this L2 distance is more appropriate. $$a_{t;i,j} = ||o^{'i}_t - o^{'j}_t||_2$$
-        - To measure the relative importance of dynamic spatial relations between pedestrians, the graph attention layer is adopted here to update the adjacency matrix $A_t$. 
+- For each time step, one graph is constructed $G_t = (V_t, E_t, F_t)$. Each vertex represents one pedestrian at time t, and edge set indicates relationship associated with each pedestrian. For each vertex a feature vector (x,y locations) is association. For the same scene (from 0 to T_obs) those graphs are concatenated to form spatio-temporal graph representation.
 
-        - Graph Attention Network is used, attention coefficients are calculated as; 
-        $$\alpha_{t;i,j} = \frac{exp(\phi(W_l[a_{t;i} \bigoplus a_{t;j}]))}{\sum_{j=1}^N exp(\phi(W_l [a_{t;i} \bigoplus a_{t;j}]))}$$
-        - Linear combination $p_{t;i}$ computed as; $$p_{t;i} = \sigma \bigg( \sum_{j=1}^N \alpha_{t;i,j} \boldsymbol{a}_{t;j}\bigg)$$
-		    - With each `column vector` $p_{t;i}$ concatenated together, we obtain the new updated adjacency matrix $A_t'$, `which contains the information of global spatial features of pedestrians at time step t`
-    - GCN Layers ($l=3$), we stack matrices from time step $T_1$ to $T_{obs}$ and output layer is calculated as $$F^{(l+1)} = \sigma \big( D^{-\frac{1}{2}} \hat{A} D^{\frac{1}{2}} F^{(l)} \boldsymbol{W}^{(l)} \big)$$
-	- `Both source and target trajectories are constructed as graphs accordingly and then fed into the parameter-shared GCN layers for feature representation extraction.`
+- We have also adjacency matrix $A_t \in \mathbb{R}^{N \times N}$ Initialized as the distances between pedestrians $i$ and $j$. They argue that this L2 distance is more appropriate. $$a_{t;i,j} = ||o^{'i}_t - o^{'j}_t||_2$$
+    - To measure the relative importance of dynamic spatial relations between pedestrians, the graph attention layer is adopted here to update the adjacency matrix $A_t$. 
+
+    - Graph Attention Network is used, attention coefficients are calculated as; 
+    $$\alpha_{t;i,j} = \frac{exp(\phi(W_l[a_{t;i} \bigoplus a_{t;j}]))}{\sum_{j=1}^N exp(\phi(W_l [a_{t;i} \bigoplus a_{t;j}]))}$$
+    - Linear combination $p_{t;i}$ computed as; $$p_{t;i} = \sigma \bigg( \sum_{j=1}^N \alpha_{t;i,j} \boldsymbol{a}_{t;j}\bigg)$$
+        - With each `column vector` $p_{t;i}$ concatenated together, we obtain the new updated adjacency matrix $A_t'$, `which contains the information of global spatial features of pedestrians at time step t`
+- GCN Layers ($l=3$), we stack matrices from time step $T_1$ to $T_{obs}$ and output layer is calculated as $$F^{(l+1)} = \sigma \big( D^{-\frac{1}{2}} \hat{A} D^{\frac{1}{2}} F^{(l)} \boldsymbol{W}^{(l)} \big)$$
+- `Both source and target trajectories are constructed as graphs accordingly and then fed into the parameter-shared GCN layers for feature representation extraction.`
+
+**Attention Based Adaptive Learning**
+- Different from conventional domain adaptation situations the feature space of trajectory sample is not fixed as the number of pedestrians are different in source and target trajectory domains. 
+- In order to address this misalignment problem, they propose a novel attention-based adaptive knowledge learning module to refine and effectively concentrate on the most relevant feature space for misalignment alleviation. Since one pedestrian’s feature vector cannot represents the whole trajectory domain. Therefore, an attention module is introduced to learn the relative relevance between feature vectors and trajectory domain.
+
+
+1. For individual-wise attention, we first reformat the final feature representations $F_{(s)}$ and $F_{(t)}$ as 
+	- $F_{(s)} = \big[ f_{(s)}^1, f_{(s)}^2, ..., f_{(s)}^{N^s} \big], f_{(s)}^i \in \mathbb{R}^{D_f \times L_{obs}}$
+	- $F_{(t)} = \big[ f_{(t)}^1, f_{(t)}^2, ..., f_{(t)}^{N^t} \big], f_{(t)}^i \in \mathbb{R}^{D_f \times L_{obs}}$
+2. Reshape those feature maps $f_{(s)}$ to vector of size $\mathbb{R}^{D_v}$, where $D_v = D_f \times L_{obs}$ 
+3.  $$ \beta _{(s)}^i = \frac{exp(h^T\ tanh(W_ff^i_{(s)}))}{\sum_{j=1}^{N^s} exp(h^T\ tanh(W_ff^i_{(s)}))}$$
+4. Final feature representations of source and target trajectory domains $c_{s} \in \mathbb{R}^{D_v}$ and $c_{t} \in \mathbb{R}^{D_v}$ are calculated as $$c_{(s)} \sum_{i=1}^{N^s} (\beta_{(s)}^i f_{(s)}^i) $$ $$ c_{(t)} \sum_{i=1}^{N^t} (\beta_{(t)}^i f_{(t)}^i) $$
+5. Similarity Loss for distribution alignment is calculated as $$
+\mathcal{L}_{align} = \frac{1}{D_f} || c_{(s)} - c_{(t)} ||_2^2$$
+
 
 
 ## 2.2. Our interpretation 
