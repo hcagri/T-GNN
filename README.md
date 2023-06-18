@@ -70,10 +70,7 @@ My goal in this project is to reproduce the ade/fde results for only some of the
             - $\phi$: LeakyReLU with $\theta = 0.2$ 
         - Linear combination $p_{t;i}$ computed as; $$p_{t;i} = \sigma \bigg( \sum_{j=1}^N \alpha_{t;i,j} \boldsymbol{a}_{t;j}\bigg)$$
 		    - With each `column vector` $p_{t;i}$ concatenated together, we obtain the new updated adjacency matrix $A_t'$, `which contains the information of global spatial features of pedestrians at time step t`
-        - GCN Layers ($l=3$), we stack matrices from time step $T_1$ to $T_{obs}$
-            - $\hat{A} = \{ \hat{A}_1,\hat{A}_2,..., \hat{A}_{obs}\} \in \mathbb{R}^{N \times N\times L_{obs}}$  
-            - $F^{(l)} = \{ F^{(l)}_1,F^{(l)}_2,...,F^{(l)}_{obs}, \} \in \mathbb{R}^{N \times D_f \times L_{obs}}$ 
-            - Finaly the output the $(l+1)^{th}$ layer is calculated as, $$F^{(l+1)} = \sigma \big( D^{-\frac{1}{2}} \hat{A} D^{\frac{1}{2}} F^{(l)} \boldsymbol{W}^{(l)} \big)$$
+        - GCN Layers ($l=3$), we stack matrices from time step $T_1$ to $T_{obs}$ and output layer is calculated as $$F^{(l+1)} = \sigma \big( D^{-\frac{1}{2}} \hat{A} D^{\frac{1}{2}} F^{(l)} \boldsymbol{W}^{(l)} \big)$$
 	    - `Both source and target trajectories are constructed as graphs accordingly and then fed into the parameter-shared GCN layers for feature representation extraction.`
 
 
