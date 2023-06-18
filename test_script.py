@@ -1,13 +1,11 @@
 import os 
 import os.path as osp
-import copy
+import json
 
 from t_gnn_lib import *
 
 import torch 
-import torch.optim as optim
 from torch.utils.data import DataLoader
-import torch.distributions.multivariate_normal as torchdist
 
 import sacred
 from sacred import Experiment
@@ -21,20 +19,35 @@ experiment_dir = os.path.join(dirname, 'experiments/test')
 ex = Experiment("ceng502")
 ex.observers.append(FileStorageObserver(experiment_dir))
 
-ex.add_config('t_gnn_lib/test_config.yml')
+
+@ex.config
+def my_config():
+    """ Please provide a run ID and select which model parameters to use """
+    
+    exp_run_id = 3
+    which_epoch = 250
+
+
+    exp_path = osp.join('experiments/training', str(exp_run_id))
+    with open(osp.join(exp_path, 'config.json'), 'r') as f_:
+        config = json.load(f_)
+    config['model_path'] = osp.join(exp_path, 'checkpoints', f'epoch_{which_epoch}.pth')
+
 
 @ex.automain
 def main(_config, _run):
 
+    config = _config['config']
+
     run_path = os.path.join(experiment_dir, _run._id)
     sacred.commands.print_config(_run)
     os.makedirs(os.path.join(run_path, 'checkpoints'))
-    model_args = _config['model']
+    model_args = config['model']
 
     test_dset = TrajectoryDataset(
-        osp.join(_config['data']['path'], 'test'),
-        obs_len =_config['data']['seq_len_obs'],
-        pred_len=_config['data']['seq_len_pred'],
+        osp.join(config['data']['path'], 'test'),
+        obs_len =config['data']['seq_len_obs'],
+        pred_len=config['data']['seq_len_pred'],
         skip=1
         )
     
@@ -51,14 +64,13 @@ def main(_config, _run):
         input_feat   = model_args['input_size'],
         feat_dim     = model_args['feat_size'],
         output_feat  = model_args['output_size'],
-        seq_len      = _config['data']['seq_len_obs'],
-        pred_seq_len = _config['data']['seq_len_pred'],
+        seq_len      = config['data']['seq_len_obs'],
+        pred_seq_len = config['data']['seq_len_pred'],
         kernel_size  = model_args['kernel_size']
         ).cuda()
 
-    model.load_state_dict(torch.load(_config['model_path']))
+    model.load_state_dict(torch.load(config['model_path']))
 
-    ade_r, fde_r = evaluate(model, test_loader, _config)
-    # ade_r, fde_r = test_test(model, test_loader)
+    ade_r, fde_r = evaluate(model, test_loader, config)
 
     print(f"Results: \nade:{ade_r}, fde:{fde_r}")

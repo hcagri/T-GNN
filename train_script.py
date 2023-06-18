@@ -13,13 +13,12 @@ from sacred.observers import FileStorageObserver
 from sacred import SETTINGS
 SETTINGS.CONFIG.READ_ONLY_CONFIG=False
 
-
 dirname = os.path.dirname(__file__)
 experiment_dir = os.path.join(dirname, 'experiments/training')
 ex = Experiment("ceng502")
 ex.observers.append(FileStorageObserver(experiment_dir))
 
-ex.add_config('t_gnn_lib/train_config.yml')
+ex.add_config('train_config.yml')
 
 @ex.automain
 def main(_config, _run):
@@ -78,24 +77,26 @@ def main(_config, _run):
 
     for epoch in range(_config['training']['num_epochs']):
         train_loss = train(model, optimizer, loss_fn, source_loader, target_loader, epoch, _config)
-        # val_loss = validate(model, loss_fn, target_loader, epoch, _config)
-
+        val_loss = validate(model, loss_fn, target_loader, epoch, _config)
+        
         metrics['train_loss'].append(train_loss)
-        # metrics['val_loss'].append(val_loss)
+        metrics['val_loss'].append(val_loss)
 
         if epoch == _config['training']['change_lr']:
-            optimizer.param_groups[0]['lr'] = 0.005
+            optimizer.param_groups[0]['lr'] = 0.0005
         
-        # if val_loss < constant_metrics['min_val_loss']:
-        #     constant_metrics['min_val_epoch'] = epoch 
-        #     constant_metrics['min_val_loss'] = val_loss
+        if val_loss < constant_metrics['min_val_loss']:
+            constant_metrics['min_val_epoch'] = epoch 
+            constant_metrics['min_val_loss'] = val_loss
 
-            # torch.save(model.state_dict(), os.path.join(run_path, 'checkpoints', f'epoch_{epoch+1}.pth'))
-        
-        # else:
-        if (epoch+1)%5 == 0:
             torch.save(model.state_dict(), os.path.join(run_path, 'checkpoints', f'epoch_{epoch+1}.pth'))
+        
+        else:
+            if (epoch+1)%5 == 0:
+                torch.save(model.state_dict(), os.path.join(run_path, 'checkpoints', f'epoch_{epoch+1}.pth'))
 
-
+    np.save(osp.join(run_path,'loss_arr_train.npy'), np.array(metrics['train_loss']))
+    np.save(osp.join(run_path,'loss_arr_val.npy'), np.array(metrics['val_loss']))
+    
     print('\n\n END of TRAINING \n\n')
     print(constant_metrics)

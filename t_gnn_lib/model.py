@@ -8,34 +8,6 @@ from torch_geometric.nn import GATConv
 from torch_geometric.utils import dense_to_sparse
 
 
-class GraphAttentionModule(nn.Module):
-    def __init__(self, max_num_peds=100):
-        super(GraphAttentionModule, self).__init__()
-
-        self.max_num_peds = max_num_peds
-        self.gat_conv = GATConv(max_num_peds, max_num_peds, 4, concat=False)
-        self.lrelu = nn.LeakyReLU(0.2)
-
-    def forward(self, A):  
-        # For each time stemp we have an adjacency matrix, shape of A: (T_obs, num_peds, num_peds)
-        num_peds = A.size(2)
-
-        # Create edge_index to perform graph attention layer, assume fully connected graph
-        adj_matrix = torch.ones(num_peds, num_peds) - torch.eye(num_peds)
-        edge_index, _ = dense_to_sparse(adj_matrix.cuda())
-        
-        new_A = torch.zeros_like(A)
-
-        for idx, A_t in enumerate(A): 
-            # each colum vector of A is our feature vector. So make them row vector to feed them into torch geometric
-            x = A_t.T
-            # Pad them with zeros, since number of pedestrians in each scene differs. 
-            x = F.pad(x, (0, self.max_num_peds - num_peds))
-            x = self.lrelu(self.gat_conv(x, edge_index))
-            new_A[idx,:,:] = x.T[:num_peds, :num_peds] + torch.eye(num_peds).cuda()
-        
-        return new_A
-
         
 class ConvTemporalGraphical(nn.Module):
     #Source : https://github.com/yysijie/st-gcn/blob/master/net/st_gcn.py
@@ -263,7 +235,34 @@ class T_GNN(nn.Module):
         return v,a
 
 
+class GraphAttentionModule(nn.Module):
+    def __init__(self, max_num_peds=100):
+        super(GraphAttentionModule, self).__init__()
 
+        self.max_num_peds = max_num_peds
+        self.gat_conv = GATConv(max_num_peds, max_num_peds, 4, concat=False)
+        self.lrelu = nn.LeakyReLU(0.2)
+
+    def forward(self, A):  
+        # For each time stemp we have an adjacency matrix, shape of A: (T_obs, num_peds, num_peds)
+        num_peds = A.size(2)
+
+        # Create edge_index to perform graph attention layer, assume fully connected graph
+        adj_matrix = torch.ones(num_peds, num_peds) - torch.eye(num_peds)
+        edge_index, _ = dense_to_sparse(adj_matrix.cuda())
+        
+        new_A = torch.zeros_like(A)
+
+        for idx, A_t in enumerate(A): 
+            # each colum vector of A is our feature vector. So make them row vector to feed them into torch geometric
+            x = A_t.T
+            # Pad them with zeros, since number of pedestrians in each scene differs. 
+            x = F.pad(x, (0, self.max_num_peds - num_peds))
+            x = self.lrelu(self.gat_conv(x, edge_index))
+
+            new_A[idx,:,:] = x.T[:num_peds, :num_peds] + torch.eye(num_peds).cuda()
+        
+        return new_A
 
 class adaptive_learning(nn.Module):
     def __init__(self, feat_dim, seq_len) -> None:
