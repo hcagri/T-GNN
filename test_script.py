@@ -24,14 +24,16 @@ ex.observers.append(FileStorageObserver(experiment_dir))
 def my_config():
     """ Please provide a run ID and select which model parameters to use """
     
-    exp_run_id = 3
-    which_epoch = 250
-
+    exp_run_id = 7
+    which_epoch = 200
 
     exp_path = osp.join('experiments/training', str(exp_run_id))
     with open(osp.join(exp_path, 'config.json'), 'r') as f_:
         config = json.load(f_)
     config['model_path'] = osp.join(exp_path, 'checkpoints', f'epoch_{which_epoch}.pth')
+
+    config['device'] = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"\n\nUsing device: {config['device']} \n")
 
 
 @ex.automain
@@ -67,7 +69,7 @@ def main(_config, _run):
         seq_len      = config['data']['seq_len_obs'],
         pred_seq_len = config['data']['seq_len_pred'],
         kernel_size  = model_args['kernel_size']
-        ).cuda()
+        ).to(config['device'])
 
     model.load_state_dict(torch.load(config['model_path']))
 

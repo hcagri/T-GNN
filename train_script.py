@@ -20,6 +20,12 @@ ex.observers.append(FileStorageObserver(experiment_dir))
 
 ex.add_config('train_config.yml')
 
+@ex.config
+def my_config():
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"\n\nUsing device: {device} \n")
+
+
 @ex.automain
 def main(_config, _run):
 
@@ -27,7 +33,7 @@ def main(_config, _run):
     sacred.commands.print_config(_run)
     os.makedirs(os.path.join(run_path, 'checkpoints'))
     model_args = _config['model']
-
+    
     source_dset = TrajectoryDataset(
         osp.join(_config['data']['path'], 'train'),
         obs_len =_config['data']['seq_len_obs'],
@@ -65,7 +71,7 @@ def main(_config, _run):
         seq_len      = _config['data']['seq_len_obs'],
         pred_seq_len = _config['data']['seq_len_pred'],
         kernel_size  = model_args['kernel_size']
-        ).cuda()
+        ).to(_config['device'])
 
     print(model)
 

@@ -69,13 +69,11 @@ def final_displacement_error( pred_pos, pred_pos_gt):
 def evaluate(model, loader, _config, num_samples=20):
     ade_outer, fde_outer = [], []
     total_traj = 0
+
     with torch.no_grad():
         for batch in loader:
-            batch = [tensor.cuda() for tensor in batch]
+            batch = [tensor.to(_config['device']) for tensor in batch]
             V_obs, A_obs, V_tr, A_tr = batch
-
-            # A_obs += torch.eye(A_obs.shape[3]).cuda()
-            # A_obs = A_obs/torch.sum(A_obs, dim=3, keepdim=True)
 
             V_pred, _ = model(V_obs, A_obs.squeeze())
 
@@ -87,7 +85,7 @@ def evaluate(model, loader, _config, num_samples=20):
             sy = torch.exp(V_pred[:,:,3]) #sy
             corr = torch.tanh(V_pred[:,:,4]) #corr
 
-            cov = torch.zeros(V_pred.shape[0],V_pred.shape[1],2,2).cuda() # shape: (12, 3, 2, 2) >> seq, node, feat, feat
+            cov = torch.zeros(V_pred.shape[0],V_pred.shape[1],2,2).to(_config['device']) # shape: (12, 3, 2, 2) >> seq, node, feat, feat
             cov[:,:,0,0]= sx*sx
             cov[:,:,0,1]= corr*sx*sy
             cov[:,:,1,0]= corr*sx*sy

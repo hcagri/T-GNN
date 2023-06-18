@@ -249,7 +249,7 @@ class GraphAttentionModule(nn.Module):
 
         # Create edge_index to perform graph attention layer, assume fully connected graph
         adj_matrix = torch.ones(num_peds, num_peds) - torch.eye(num_peds)
-        edge_index, _ = dense_to_sparse(adj_matrix.cuda())
+        edge_index, _ = dense_to_sparse(adj_matrix.to(A.device))
         
         new_A = torch.zeros_like(A)
 
@@ -260,7 +260,7 @@ class GraphAttentionModule(nn.Module):
             x = F.pad(x, (0, self.max_num_peds - num_peds))
             x = self.lrelu(self.gat_conv(x, edge_index))
 
-            new_A[idx,:,:] = x.T[:num_peds, :num_peds] + torch.eye(num_peds).cuda()
+            new_A[idx,:,:] = x.T[:num_peds, :num_peds] + torch.eye(num_peds).to(A.device)
         
         return new_A
 

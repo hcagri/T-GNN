@@ -12,6 +12,7 @@ def train(model,
          ):
     
     batch_size = _config['training']['batch_size']
+    device = _config['device']
 
     model.train()
     loss_batch = 0 
@@ -26,8 +27,8 @@ def train(model,
     for i_, (batch_source, batch_target) in enumerate(zip(source_loader, target_loader)):
         num_iter += 1
 
-        batch_source = [tensor.cuda() for tensor in batch_source]
-        batch_target = [tensor.cuda() for tensor in batch_target]
+        batch_source = [tensor.to(device) for tensor in batch_source]
+        batch_target = [tensor.to(device) for tensor in batch_target]
 
         V_obs_source, A_obs_source, V_pred_gt, A_pred_gt = batch_source
         V_obs_target, A_obs_target, _, _ = batch_target
@@ -78,6 +79,7 @@ def validate(model,
              _config
             ):
     batch_size = _config['training']['batch_size']
+    device = _config['device']
 
     model.eval()
     loss_batch = 0 
@@ -91,7 +93,7 @@ def validate(model,
         for i_, batch_target in enumerate(target_loader):
             num_iter += 1
 
-            batch_target = [tensor.cuda() for tensor in batch_target]
+            batch_target = [tensor.to(device) for tensor in batch_target]
 
             V_obs_target, A_obs_target, V_pred_gt, A_pred_gt = batch_target
 
