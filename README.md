@@ -159,13 +159,18 @@ conda activate py_cuda
 
 ## 3.3. Results
 
+<p align="center"><img src="figures/train_loss.png" alt="Model_chart" style="height: 340px; width:1000px;"/></p>
+<p align="center">Figure 3: Training Loss of each Experiment </p>
+
 <p align="center"><img src="figures/ade_fde.png" alt="Model_chart" style="height: 340px; width:850px;"/></p>
-<p align="center">Figure 3: Original Paper Results </p>
+<p align="center">Figure 4: Original Paper Results </p>
 
 |         |     A2B   | B2C       | C2D       | D2E   | E2A |
 |-------  |-----------|-----------|---------- |-------|------|
 |ade/fde  | 3.49/3.8  | 2.28/2.99 | 1.62/1.89 | 1.05/1.54  | 3.48/2.97 |
 <p align="center">Table 1: Reproduced Results </p>
+
+
 
 `Comparison:` The results obtained from the reproduction of the model exhibit a noticeable discrepancy when compared to the original results. While the reproduced results are not entirely unfavorable, they do indicate that the model is learning. However, it is important to acknowledge the possibility of missing implementation details or misunderstandings that may have influenced the outcome. And also, it is mentioned in the experimental setting of the paper that the model is trained on `only one` domain and tested on other domains. So the amount of data that model consumes is very limited in this setup, if I understood correctly.
 
