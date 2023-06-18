@@ -102,9 +102,9 @@ My goal in this project is to reproduce the ade/fde results for only some of the
     - So to solve this problem I use larger N as the maximum number of pedestrians that can exists on any scene, then for a scene with smaller number of pedestrians I zero pad the adjacancy matrix. Graph attention network is performed on zero padded Adjacancy matrix and the the portion of the new adjacency matrix is returned (A_new = A_padded[:num_pedestrians, :num_pedestrians])
 
 2. In `Attention Based Adaptive Learning` part it is said that the single pedestrian is not representative for the whole trajectory and each iteration mostly we have very few number of pedestrians exists on the scene, but we also need to use the allignment loss while updating the model. So it was not clear to me when this loss is calculated. Because to obtain a representative feature vector of the trajectory domain, we should observe as much as pedestrians as we could.
-    - So I assume it would be wise to calculate at the end of each batch. So in each iteration I collected the feature representations of each pedestrian before passing them to temporal prediction module, and calculate the allignment loss at the of the batch. (Batch and iteration is not corresponding to same thing when working with graph structured data, since in each iteration I can only process one graph at a time in this model.)
+    - To address this, a logical approach would be to calculate the alignment loss at the end of each batch. In each iteration, the feature representations of each pedestrian can be collected before passing them to the temporal prediction module. By doing so, the alignment loss can be computed based on the gathered feature representations at the end of the batch. It is important to note that in the context of graph-structured data, the concepts of batch and iteration do not directly correspond to each other. Since only one graph can be processed at a time in this model, each iteration would involve processing one graph. Therefore, collecting the feature representations of all pedestrians within an iteration and calculating the alignment loss at the end of the batch would allow for a more comprehensive and representative feature vector of the trajectory domain.
 
-3. Decentralization operation explained in `Spatial-Temporal Feature Representations` section is not explained clearly. So I also checked the referenced papers also using this strategy. I have implemented the equation provided but the results were better when we use relative differences between coordinates, as most of the previous approaches employed.
+3. The explanation of the decentralization operation in the `Spatial-Temporal Feature Representations` section was found to be unclear. To gain a better understanding, additional references were consulted to explore the usage of this strategy. The provided equation for the decentralization operation was implemented; however, the results obtained were not as favorable as those achieved by employing the relative differences between coordinates, a common approach adopted by many previous methods.
 
 # 3. Experiments and results
 
@@ -127,6 +127,7 @@ Setup of the original paper,
 
 ## 3.2. Running the code
 @TODO: Explain your code & directory structure and how other people can run it.
+1.  Overall, the expected folder structure is:
 ```
 ├── dataset
     ├── A
@@ -140,21 +141,13 @@ Setup of the original paper,
     │   ├── ...
     ├── ...
 ├── experiments
-    ├── test
-    │   ├── 1
-    │   │   ├── checkpoints
-    │   │   ├── ...
     └── training
         ├── 1
         │   ├── checkpoints
         │       └── epoch_200.pth
         │   ├── config.json
-        │   ├── cout.txt
-        │   ├── loss_arr_train.npy
-        │   ├── loss_arr_val.npy
-        │   ├── metrics.json
-        │   └── run.json
-        ├── ...
+        │   ├── ...
+        └── ...
 ├── t_gnn_lib
     ├── dataset.py
     ├── __init__.py
@@ -166,19 +159,43 @@ Setup of the original paper,
 ├── train_script.py
 ├── train_config.yml
 ```
+2. Create an Anaconda environment for this project:
+```
+conda env create -f environment.yml
+conda activate py_cuda
+```
+3. The training process is initiated by running the train_script.py file, while the specific model parameters are adjusted within the training_config.yml file. Upon completion of the training, the relevant files associated with that particular run are saved under a unique ID within the experiments/ folder. To test the trained model, inside `test_script.py` there is configuration function, provide the run ID and the epoch ID and run the script.
 
 ## 3.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+<p align="center"><img src="figures/ade_fde.png" alt="Model_chart" style="height: 340px; width:850px;"/></p>
+<p align="center">Figure 3: Original Paper Results </p>
+
+|         |     A2B   | B2C       | C2D       | D2E   | E2A |
+|-------  |-----------|-----------|---------- |-------|------|
+|ade/fde  | 3.49/3.8  | 2.28/2.99 | 1.62/1.89 | 1.05/1.54  | 3.48/2.97 |
+<p align="center">Table 1: Reproduced Results </p>
+
+`Comparison:` The results obtained from the reproduction of the model exhibit a noticeable discrepancy when compared to the original results. While the reproduced results are not entirely unfavorable, they do indicate that the model is learning to some extent. However, it is important to acknowledge the possibility of missing implementation details or misunderstandings that may have influenced the outcome.
 
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+- The main reason for the discrepancies in the results may stem from assumptions made during the implementation of parts that were not clearly explained. It is possible that there was a misunderstanding of the decentralization operation or a missed detail. To test the effect of the decentralization operation, I also applied it to another trajectory prediction model called Social-STGCNN. Surprisingly, the results indicated that the decentralization operation performed poorly compared to the use of relative coordinates in that model. However, it should be noted that using the decentralization operation still produced better results than using raw coordinates of pedestrians.
+
+- Furthermore, the original paper lacked sufficient explanations for updating the adjacency matrix with a graph attention network. To address this issue, I developed a solution as described in section 2.2 of my work. Although this solution led to improved ade/fde results, they were not comparable to the original results reported in the paper.
+
+In summary, the discrepancies in the results can be attributed to assumptions made during implementation, potential misunderstandings of certain operations, and the lack of detailed explanations in the original paper.
 
 # 5. References
 
-@TODO: Provide your references here.
+- I borrowed the negative log likelihood loss for bivariate Gausssian assumption from below.
+    - https://github.com/abduallahmohamed/Social-STGCNN
+- For dataloader, I refer to the repository below
+    - https://github.com/agrimgupta92/sgan
+- For temporal prediction module, I refer to,
+    - https://arxiv.org/abs/1803.01271
+    - https://arxiv.org/abs/1801.07455
 
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+* Halil Çağrı Bilgi, cagri.bilgi@metu.edu.tr
