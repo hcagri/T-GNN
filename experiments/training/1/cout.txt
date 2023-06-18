@@ -1,0 +1,870 @@
+INFO - ceng502 - Running command 'main'
+INFO - ceng502 - Started run with ID "1"
+Configuration ([34mmodified[0m, [32madded[0m, [31mtypechanged[0m, [2mdoc[0m):
+  device = device(type='cuda')
+  seed = 827490098                   [2m# the random seed for this experiment[0m
+  data:
+    path = 'dataset/A/A_B'
+    seq_len_obs = 8
+    seq_len_pred = 12
+  model:
+    feat_size = 64
+    input_size = 2
+    kernel_size = 3
+    num_gcn = 3
+    num_tcn = 3
+    output_size = 5
+  training:
+    batch_size = 32
+    change_lr = 150
+    lambda = 1
+    lr = 0.001
+    num_epochs = 200
+Processing Data .....
+  0%|          | 0/40 [00:00<?, ?it/s]100%|██████████| 40/40 [00:00<00:00, 552.30it/s]
+Processing Data .....
+  0%|          | 0/69 [00:00<?, ?it/s] 41%|████      | 28/69 [00:00<00:00, 270.69it/s] 81%|████████  | 56/69 [00:00<00:00, 179.18it/s]100%|██████████| 69/69 [00:00<00:00, 194.58it/s]
+T_GNN(
+  (lin_proj): Linear(in_features=2, out_features=64, bias=True)
+  (lin_proj_2): Linear(in_features=64, out_features=5, bias=True)
+  (relu): ReLU()
+  (graph_attn_module): GraphAttentionModule(
+    (gat_conv): GATConv(100, 100, heads=4)
+    (lrelu): LeakyReLU(negative_slope=0.2)
+  )
+  (attention_module): adaptive_learning(
+    (tanh): Tanh()
+    (W): Linear(in_features=512, out_features=64, bias=True)
+    (h): Linear(in_features=64, out_features=1, bias=True)
+    (softmax): Softmax(dim=1)
+  )
+  (st_gcns): ModuleList(
+    (0-2): 3 x st_gcn(
+      (gcn): ConvTemporalGraphical(
+        (conv): Conv2d(64, 64, kernel_size=(1, 1), stride=(1, 1))
+      )
+      (tcn): Sequential(
+        (0): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (1): PReLU(num_parameters=1)
+        (2): Conv2d(64, 64, kernel_size=(3, 1), stride=(1, 1), padding=(1, 0))
+        (3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (4): Dropout(p=0, inplace=True)
+      )
+      (prelu): PReLU(num_parameters=1)
+    )
+  )
+  (tpcnns): ModuleList(
+    (0): Conv2d(8, 12, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (1-2): 2 x Conv2d(12, 12, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  )
+  (prelus): ModuleList(
+    (0-2): 3 x PReLU(num_parameters=1)
+  )
+)
+L_align tensor(0.1959, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.4000, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 0 	 Loss: 20.88057041168213
+VAL: 	 Epoch: 0 	 Loss: 0.4622634372849395
+L_align tensor(0.2032, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1677, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 1 	 Loss: 13.955318260192872
+VAL: 	 Epoch: 1 	 Loss: 0.3730744589929995
+L_align tensor(0.1962, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.2223, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 2 	 Loss: 10.862481498718262
+VAL: 	 Epoch: 2 	 Loss: 0.33090454426364624
+L_align tensor(0.1852, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.2238, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 3 	 Loss: 8.235852813720703
+VAL: 	 Epoch: 3 	 Loss: 0.28746287373528967
+L_align tensor(0.1826, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.2123, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 4 	 Loss: 6.767442512512207
+VAL: 	 Epoch: 4 	 Loss: 0.2505300563314687
+L_align tensor(0.1598, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1930, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 5 	 Loss: 6.001578330993652
+VAL: 	 Epoch: 5 	 Loss: 0.22702595548353333
+L_align tensor(0.1433, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1580, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 6 	 Loss: 5.41953477859497
+VAL: 	 Epoch: 6 	 Loss: 0.20725640870522763
+L_align tensor(0.1435, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1787, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 7 	 Loss: 4.871798896789551
+VAL: 	 Epoch: 7 	 Loss: 0.1944434176320615
+L_align tensor(0.1329, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1784, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 8 	 Loss: 4.73413314819336
+VAL: 	 Epoch: 8 	 Loss: 0.18714720615442249
+L_align tensor(0.1446, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1903, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 9 	 Loss: 4.636354923248291
+VAL: 	 Epoch: 9 	 Loss: 0.1853981311770453
+L_align tensor(0.1364, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1622, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 10 	 Loss: 4.478316020965576
+VAL: 	 Epoch: 10 	 Loss: 0.17964685913445294
+L_align tensor(0.1388, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1388, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 11 	 Loss: 4.429006576538086
+VAL: 	 Epoch: 11 	 Loss: 0.18393834777500317
+L_align tensor(0.1334, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1737, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 12 	 Loss: 4.335326862335205
+VAL: 	 Epoch: 12 	 Loss: 0.18374289032341778
+L_align tensor(0.1324, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1662, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 13 	 Loss: 4.157700061798096
+VAL: 	 Epoch: 13 	 Loss: 0.19064809965050739
+L_align tensor(0.1338, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.2542, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 14 	 Loss: 4.089625644683838
+VAL: 	 Epoch: 14 	 Loss: 0.1930787597877392
+L_align tensor(0.1356, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1652, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 15 	 Loss: 3.930080270767212
+VAL: 	 Epoch: 15 	 Loss: 0.20271905263264975
+L_align tensor(0.1316, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1774, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 16 	 Loss: 3.850516366958618
+VAL: 	 Epoch: 16 	 Loss: 0.21093562115793643
+L_align tensor(0.1308, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1630, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 17 	 Loss: 3.8447624683380126
+VAL: 	 Epoch: 17 	 Loss: 0.21682455574256787
+L_align tensor(0.1337, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1532, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 18 	 Loss: 3.646117925643921
+VAL: 	 Epoch: 18 	 Loss: 0.22446880910707556
+L_align tensor(0.1352, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1697, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 19 	 Loss: 3.6239323139190676
+VAL: 	 Epoch: 19 	 Loss: 0.23451323094575302
+L_align tensor(0.1278, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.2061, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 20 	 Loss: 3.520009183883667
+VAL: 	 Epoch: 20 	 Loss: 0.23437491534412772
+L_align tensor(0.1293, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1463, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 21 	 Loss: 3.4296138286590576
+VAL: 	 Epoch: 21 	 Loss: 0.2497124948363373
+L_align tensor(0.1412, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.2561, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 22 	 Loss: 3.274858808517456
+VAL: 	 Epoch: 22 	 Loss: 0.26914247913637024
+L_align tensor(0.1389, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1600, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 23 	 Loss: 3.223117733001709
+VAL: 	 Epoch: 23 	 Loss: 0.25724020211592963
+L_align tensor(0.1389, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.2443, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 24 	 Loss: 3.184996557235718
+VAL: 	 Epoch: 24 	 Loss: 0.2750392236571381
+L_align tensor(0.1355, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1738, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 25 	 Loss: 2.954790210723877
+VAL: 	 Epoch: 25 	 Loss: 0.2995263631793036
+L_align tensor(0.1496, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1698, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 26 	 Loss: 2.9504677295684814
+VAL: 	 Epoch: 26 	 Loss: 0.2791782548462135
+L_align tensor(0.1525, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.2213, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 27 	 Loss: 2.8320797443389893
+VAL: 	 Epoch: 27 	 Loss: 0.2877621754356053
+L_align tensor(0.1469, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.2263, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 28 	 Loss: 2.680895948410034
+VAL: 	 Epoch: 28 	 Loss: 0.33380254800768866
+L_align tensor(0.1454, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1949, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 29 	 Loss: 2.698863172531128
+VAL: 	 Epoch: 29 	 Loss: 0.36818781624669616
+L_align tensor(0.1442, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1903, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 30 	 Loss: 2.556173872947693
+VAL: 	 Epoch: 30 	 Loss: 0.4075986734334973
+L_align tensor(0.1450, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1744, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 31 	 Loss: 2.539449429512024
+VAL: 	 Epoch: 31 	 Loss: 0.3934538727221282
+L_align tensor(0.1366, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1855, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 32 	 Loss: 2.5374738693237306
+VAL: 	 Epoch: 32 	 Loss: 0.4401269097259079
+L_align tensor(0.1351, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1730, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 33 	 Loss: 2.3350741386413576
+VAL: 	 Epoch: 33 	 Loss: 0.43306733041569806
+L_align tensor(0.1444, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1689, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 34 	 Loss: 2.37538423538208
+VAL: 	 Epoch: 34 	 Loss: 0.40922780313353607
+L_align tensor(0.1448, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1483, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 35 	 Loss: 2.215181827545166
+VAL: 	 Epoch: 35 	 Loss: 0.4939072892285775
+L_align tensor(0.1448, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.2904, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 36 	 Loss: 2.1620224475860597
+VAL: 	 Epoch: 36 	 Loss: 0.48348472774892615
+L_align tensor(0.1370, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1729, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 37 	 Loss: 2.027399110794067
+VAL: 	 Epoch: 37 	 Loss: 0.5112134978391122
+L_align tensor(0.1471, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1544, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 38 	 Loss: 2.0905930042266845
+VAL: 	 Epoch: 38 	 Loss: 0.48794033561927685
+L_align tensor(0.1331, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1644, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 39 	 Loss: 2.1398149728775024
+VAL: 	 Epoch: 39 	 Loss: 0.5224931620169377
+L_align tensor(0.1404, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1989, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 40 	 Loss: 2.1538617610931396
+VAL: 	 Epoch: 40 	 Loss: 0.566657518994981
+L_align tensor(0.1299, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1860, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 41 	 Loss: 2.04103741645813
+VAL: 	 Epoch: 41 	 Loss: 0.5636181036631266
+L_align tensor(0.1290, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1368, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 42 	 Loss: 2.0337206602096556
+VAL: 	 Epoch: 42 	 Loss: 0.5598497598067574
+L_align tensor(0.1175, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1340, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 43 	 Loss: 2.0621612548828123
+VAL: 	 Epoch: 43 	 Loss: 0.5462237406468046
+L_align tensor(0.1203, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1852, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 44 	 Loss: 1.9551361083984375
+VAL: 	 Epoch: 44 	 Loss: 0.5457731813624285
+L_align tensor(0.1208, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1640, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 45 	 Loss: 1.8933230638504028
+VAL: 	 Epoch: 45 	 Loss: 0.5145198676897131
+L_align tensor(0.1266, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1361, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 46 	 Loss: 1.7315752506256104
+VAL: 	 Epoch: 46 	 Loss: 0.5083342375962631
+L_align tensor(0.1232, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1696, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 47 	 Loss: 1.7931661367416383
+VAL: 	 Epoch: 47 	 Loss: 0.5637253125508627
+L_align tensor(0.1221, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1603, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 48 	 Loss: 1.9131093502044678
+VAL: 	 Epoch: 48 	 Loss: 0.6158330993375917
+L_align tensor(0.1238, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1913, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 49 	 Loss: 1.6794013977050781
+VAL: 	 Epoch: 49 	 Loss: 0.5480518064637115
+L_align tensor(0.1178, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1396, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 50 	 Loss: 1.6073404788970946
+VAL: 	 Epoch: 50 	 Loss: 0.5650640155958093
+L_align tensor(0.1202, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1819, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 51 	 Loss: 1.4675419330596924
+VAL: 	 Epoch: 51 	 Loss: 0.5602852296138155
+L_align tensor(0.1287, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1637, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 52 	 Loss: 1.5110863208770753
+VAL: 	 Epoch: 52 	 Loss: 0.6099119255508202
+L_align tensor(0.1324, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1585, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 53 	 Loss: 1.404293318092823
+VAL: 	 Epoch: 53 	 Loss: 0.659254889557327
+L_align tensor(0.1170, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1525, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 54 	 Loss: 1.4813050985336305
+VAL: 	 Epoch: 54 	 Loss: 0.6348132810730865
+L_align tensor(0.1274, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1494, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 55 	 Loss: 1.598713791370392
+VAL: 	 Epoch: 55 	 Loss: 0.6406480816827305
+L_align tensor(0.1171, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1605, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 56 	 Loss: 1.4036328077316285
+VAL: 	 Epoch: 56 	 Loss: 0.5929722716842872
+L_align tensor(0.1190, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1349, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 57 	 Loss: 1.564990234375
+VAL: 	 Epoch: 57 	 Loss: 0.639132893603781
+L_align tensor(0.1377, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1987, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 58 	 Loss: 1.4407481670379638
+VAL: 	 Epoch: 58 	 Loss: 0.5849280910215516
+L_align tensor(0.1190, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1722, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 59 	 Loss: 1.3123692989349365
+VAL: 	 Epoch: 59 	 Loss: 0.7067627181177554
+L_align tensor(0.1178, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1553, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 60 	 Loss: 1.3275622367858886
+VAL: 	 Epoch: 60 	 Loss: 0.713955989782361
+L_align tensor(0.1235, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1449, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 61 	 Loss: 1.2257238030433655
+VAL: 	 Epoch: 61 	 Loss: 0.7565442617388739
+L_align tensor(0.1271, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1519, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 62 	 Loss: 1.2499855041503907
+VAL: 	 Epoch: 62 	 Loss: 0.714561106502146
+L_align tensor(0.1386, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1437, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 63 	 Loss: 2.2021714210510255
+VAL: 	 Epoch: 63 	 Loss: 0.6883096867713375
+L_align tensor(0.1220, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1235, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 64 	 Loss: 3.149983286857605
+VAL: 	 Epoch: 64 	 Loss: 0.6069840417392012
+L_align tensor(0.1325, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1536, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 65 	 Loss: 2.1290424346923826
+VAL: 	 Epoch: 65 	 Loss: 0.5609608214834462
+L_align tensor(0.1211, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1341, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 66 	 Loss: 2.5017933368682863
+VAL: 	 Epoch: 66 	 Loss: 0.4661865502163984
+L_align tensor(0.1246, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1543, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 67 	 Loss: 2.4521311044692995
+VAL: 	 Epoch: 67 	 Loss: 0.3925369546033334
+L_align tensor(0.1307, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1398, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 68 	 Loss: 2.384060573577881
+VAL: 	 Epoch: 68 	 Loss: 0.43924241480620013
+L_align tensor(0.1229, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1487, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 69 	 Loss: 2.3862617015838623
+VAL: 	 Epoch: 69 	 Loss: 0.3806907318640446
+L_align tensor(0.1307, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1314, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 70 	 Loss: 2.297164463996887
+VAL: 	 Epoch: 70 	 Loss: 0.40462349290433136
+L_align tensor(0.1304, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1474, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 71 	 Loss: 2.0953280448913576
+VAL: 	 Epoch: 71 	 Loss: 0.455521115358325
+L_align tensor(0.1192, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1719, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 72 	 Loss: 2.078621673583984
+VAL: 	 Epoch: 72 	 Loss: 0.45502305030822754
+L_align tensor(0.1267, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1455, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 73 	 Loss: 1.9578048944473267
+VAL: 	 Epoch: 73 	 Loss: 0.4496067658714626
+L_align tensor(0.1263, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1346, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 74 	 Loss: 1.873340892791748
+VAL: 	 Epoch: 74 	 Loss: 0.429733875868977
+L_align tensor(0.1219, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1495, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 75 	 Loss: 1.7658722162246705
+VAL: 	 Epoch: 75 	 Loss: 0.44083029981972516
+L_align tensor(0.1203, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1839, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 76 	 Loss: 1.6456330299377442
+VAL: 	 Epoch: 76 	 Loss: 0.5530856053034464
+L_align tensor(0.1215, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1661, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 77 	 Loss: 1.5746596336364747
+VAL: 	 Epoch: 77 	 Loss: 0.44057626309602155
+L_align tensor(0.1164, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1513, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 78 	 Loss: 1.3998521327972413
+VAL: 	 Epoch: 78 	 Loss: 0.49883005584495654
+L_align tensor(0.1167, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1541, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 79 	 Loss: 1.3147363543510437
+VAL: 	 Epoch: 79 	 Loss: 0.5344760728918988
+L_align tensor(0.1149, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1676, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 80 	 Loss: 1.2417502284049988
+VAL: 	 Epoch: 80 	 Loss: 0.5750525481459023
+L_align tensor(0.1161, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1575, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 81 	 Loss: 1.7438464641571045
+VAL: 	 Epoch: 81 	 Loss: 0.5342638872671819
+L_align tensor(0.1257, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1407, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 82 	 Loss: 5.7100951910018924
+VAL: 	 Epoch: 82 	 Loss: 0.4354060283605603
+L_align tensor(0.1254, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1866, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 83 	 Loss: 3.429324436187744
+VAL: 	 Epoch: 83 	 Loss: 0.40811497923256695
+L_align tensor(0.1256, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1473, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 84 	 Loss: 2.8796672344207765
+VAL: 	 Epoch: 84 	 Loss: 0.4331753323043602
+L_align tensor(0.1159, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1289, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 85 	 Loss: 2.8537545680999754
+VAL: 	 Epoch: 85 	 Loss: 0.37004070005555084
+L_align tensor(0.1154, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1219, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 86 	 Loss: 2.8699350357055664
+VAL: 	 Epoch: 86 	 Loss: 0.33250966797704284
+L_align tensor(0.1169, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1737, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 87 	 Loss: 2.921223592758179
+VAL: 	 Epoch: 87 	 Loss: 0.34391047298044397
+L_align tensor(0.1115, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1533, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 88 	 Loss: 2.8515836238861083
+VAL: 	 Epoch: 88 	 Loss: 0.3805330991744995
+L_align tensor(0.1156, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1384, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 89 	 Loss: 2.948565626144409
+VAL: 	 Epoch: 89 	 Loss: 0.3082188730654509
+L_align tensor(0.1104, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1541, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 90 	 Loss: 2.8320934772491455
+VAL: 	 Epoch: 90 	 Loss: 0.32626471312149713
+L_align tensor(0.1082, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1505, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 91 	 Loss: 2.8089064598083495
+VAL: 	 Epoch: 91 	 Loss: 0.27556184409321216
+L_align tensor(0.1075, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1564, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 92 	 Loss: 2.7540117263793946
+VAL: 	 Epoch: 92 	 Loss: 0.41165777220242267
+L_align tensor(0.1084, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1421, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 93 	 Loss: 2.682730484008789
+VAL: 	 Epoch: 93 	 Loss: 0.3052297675091287
+L_align tensor(0.1089, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1996, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 94 	 Loss: 2.604924273490906
+VAL: 	 Epoch: 94 	 Loss: 0.3224760734516641
+L_align tensor(0.1111, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1498, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 95 	 Loss: 2.5412683963775633
+VAL: 	 Epoch: 95 	 Loss: 0.268880692081175
+L_align tensor(0.1324, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1368, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 96 	 Loss: 2.4653621196746824
+VAL: 	 Epoch: 96 	 Loss: 0.28044580722200696
+L_align tensor(0.1083, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1321, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 97 	 Loss: 2.3104669094085692
+VAL: 	 Epoch: 97 	 Loss: 0.2870044777358788
+L_align tensor(0.1162, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1216, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 98 	 Loss: 2.3668336153030394
+VAL: 	 Epoch: 98 	 Loss: 0.2846708677817082
+L_align tensor(0.1088, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1576, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 99 	 Loss: 2.306531047821045
+VAL: 	 Epoch: 99 	 Loss: 0.3113548686538917
+L_align tensor(0.1132, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1412, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 100 	 Loss: 2.155334711074829
+VAL: 	 Epoch: 100 	 Loss: 0.300686858702397
+L_align tensor(0.1115, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1537, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 101 	 Loss: 2.0764734029769896
+VAL: 	 Epoch: 101 	 Loss: 0.37184914989747864
+L_align tensor(0.1134, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1504, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 102 	 Loss: 2.060841178894043
+VAL: 	 Epoch: 102 	 Loss: 0.3380520378333935
+L_align tensor(0.1149, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1545, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 103 	 Loss: 1.917141604423523
+VAL: 	 Epoch: 103 	 Loss: 0.35400006391000055
+L_align tensor(0.1101, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1296, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 104 	 Loss: 1.8445225954055786
+VAL: 	 Epoch: 104 	 Loss: 0.3359913350879282
+L_align tensor(0.1049, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1350, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 105 	 Loss: 1.82375226020813
+VAL: 	 Epoch: 105 	 Loss: 0.4262471164482227
+L_align tensor(0.1134, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1639, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 106 	 Loss: 1.6639588117599486
+VAL: 	 Epoch: 106 	 Loss: 0.41491006422733917
+L_align tensor(0.1119, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1372, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 107 	 Loss: 1.6105287551879883
+VAL: 	 Epoch: 107 	 Loss: 0.47555557195691095
+L_align tensor(0.1114, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.2083, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 108 	 Loss: 1.4573892116546632
+VAL: 	 Epoch: 108 	 Loss: 0.5038282387498496
+L_align tensor(0.1112, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1343, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 109 	 Loss: 1.5795238018035889
+VAL: 	 Epoch: 109 	 Loss: 0.46317814052968787
+L_align tensor(0.1065, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1644, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 110 	 Loss: 1.698990249633789
+VAL: 	 Epoch: 110 	 Loss: 0.6407650277234506
+L_align tensor(0.1102, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1383, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 111 	 Loss: 1.5387860059738159
+VAL: 	 Epoch: 111 	 Loss: 0.5270589607349341
+L_align tensor(0.1253, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1496, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 112 	 Loss: 1.4246038913726806
+VAL: 	 Epoch: 112 	 Loss: 0.5103446055149686
+L_align tensor(0.1191, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1179, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 113 	 Loss: 1.194102954864502
+VAL: 	 Epoch: 113 	 Loss: 0.5939064578733583
+L_align tensor(0.1227, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1237, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 114 	 Loss: 1.2292957305908203
+VAL: 	 Epoch: 114 	 Loss: 0.5441596058831699
+L_align tensor(0.1165, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1252, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 115 	 Loss: 1.1490040063858031
+VAL: 	 Epoch: 115 	 Loss: 0.6571703665498374
+L_align tensor(0.1208, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1296, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 116 	 Loss: 1.1111521542072296
+VAL: 	 Epoch: 116 	 Loss: 0.6276625481204711
+L_align tensor(0.1040, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1468, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 117 	 Loss: 1.1666926324367524
+VAL: 	 Epoch: 117 	 Loss: 0.6821126246797866
+L_align tensor(0.1054, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1831, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 118 	 Loss: 1.440197968482971
+VAL: 	 Epoch: 118 	 Loss: 0.6749824717424918
+L_align tensor(0.1210, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1578, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 119 	 Loss: 1.928263282775879
+VAL: 	 Epoch: 119 	 Loss: 0.6725356475166653
+L_align tensor(0.1055, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1506, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 120 	 Loss: 1.2721716165542603
+VAL: 	 Epoch: 120 	 Loss: 0.6570505957672561
+L_align tensor(0.1177, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1543, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 121 	 Loss: 1.1428551197052002
+VAL: 	 Epoch: 121 	 Loss: 0.6896695399629897
+L_align tensor(0.1201, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1539, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 122 	 Loss: 1.0804929256439209
+VAL: 	 Epoch: 122 	 Loss: 0.7134647265724514
+L_align tensor(0.1144, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1329, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 123 	 Loss: 1.1174723625183105
+VAL: 	 Epoch: 123 	 Loss: 0.7300980056541554
+L_align tensor(0.1240, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1140, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 124 	 Loss: 1.0731935977935791
+VAL: 	 Epoch: 124 	 Loss: 0.705366597659346
+L_align tensor(0.1109, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1029, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 125 	 Loss: 1.0472471356391906
+VAL: 	 Epoch: 125 	 Loss: 0.7166559765304344
+L_align tensor(0.1113, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1327, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 126 	 Loss: 0.9803862333297729
+VAL: 	 Epoch: 126 	 Loss: 0.6846856414407924
+L_align tensor(0.1070, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1203, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 127 	 Loss: 0.8224929213523865
+VAL: 	 Epoch: 127 	 Loss: 0.7093405239823936
+L_align tensor(0.1142, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1432, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 128 	 Loss: 0.8623662114143371
+VAL: 	 Epoch: 128 	 Loss: 0.7353164493173793
+L_align tensor(0.1074, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1762, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 129 	 Loss: 0.6528355956077576
+VAL: 	 Epoch: 129 	 Loss: 0.7616358045218647
+L_align tensor(0.1098, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1322, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 130 	 Loss: 0.6788672834634781
+VAL: 	 Epoch: 130 	 Loss: 0.7943158840787583
+L_align tensor(0.1227, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1374, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 131 	 Loss: 0.7293537855148315
+VAL: 	 Epoch: 131 	 Loss: 0.8184591203496077
+L_align tensor(0.0987, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1557, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 132 	 Loss: 1.225673294067383
+VAL: 	 Epoch: 132 	 Loss: 0.8210828304290771
+L_align tensor(0.1175, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1364, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 133 	 Loss: 2.3562877774238586
+VAL: 	 Epoch: 133 	 Loss: 0.8196770211924678
+L_align tensor(0.1109, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1420, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 134 	 Loss: 1.684396505355835
+VAL: 	 Epoch: 134 	 Loss: 0.7639301306959512
+L_align tensor(0.1150, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1191, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 135 	 Loss: 1.187123191356659
+VAL: 	 Epoch: 135 	 Loss: 0.7830009909643643
+L_align tensor(0.1040, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1535, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 136 	 Loss: 1.2312537670135497
+VAL: 	 Epoch: 136 	 Loss: 0.8114684733791627
+L_align tensor(0.1061, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1179, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 137 	 Loss: 1.2957818269729615
+VAL: 	 Epoch: 137 	 Loss: 0.7641071236651876
+L_align tensor(0.1140, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1268, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 138 	 Loss: 1.1030073285102844
+VAL: 	 Epoch: 138 	 Loss: 0.7507060956263888
+L_align tensor(0.1078, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1290, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 139 	 Loss: 1.089870285987854
+VAL: 	 Epoch: 139 	 Loss: 0.8102113785951034
+L_align tensor(0.1091, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1473, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 140 	 Loss: 1.1953765392303466
+VAL: 	 Epoch: 140 	 Loss: 0.8241222975910574
+L_align tensor(0.1171, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1269, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 141 	 Loss: 0.9415869832038879
+VAL: 	 Epoch: 141 	 Loss: 0.82974204118701
+L_align tensor(0.1064, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1761, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 142 	 Loss: 0.9495486974716186
+VAL: 	 Epoch: 142 	 Loss: 0.8301388629968616
+L_align tensor(0.1102, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1063, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 143 	 Loss: 0.8549722552299499
+VAL: 	 Epoch: 143 	 Loss: 0.8267950700676959
+L_align tensor(0.1136, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1620, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 144 	 Loss: 0.8584805607795716
+VAL: 	 Epoch: 144 	 Loss: 0.8766184371450673
+L_align tensor(0.1149, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1216, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 145 	 Loss: 0.799472427368164
+VAL: 	 Epoch: 145 	 Loss: 0.9085145756818246
+L_align tensor(0.1185, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1423, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 146 	 Loss: 0.6252411246299744
+VAL: 	 Epoch: 146 	 Loss: 0.9694422293400419
+L_align tensor(0.1069, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1499, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 147 	 Loss: 0.6499289751052857
+VAL: 	 Epoch: 147 	 Loss: 0.9687655144843502
+L_align tensor(0.1095, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1612, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 148 	 Loss: 0.6534364819526672
+VAL: 	 Epoch: 148 	 Loss: 0.9403269878332166
+L_align tensor(0.1069, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1348, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 149 	 Loss: 1.0013765174895526
+VAL: 	 Epoch: 149 	 Loss: 0.9625794023707293
+L_align tensor(0.1151, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1499, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 150 	 Loss: 0.4653781890869141
+VAL: 	 Epoch: 150 	 Loss: 0.9693615816641545
+L_align tensor(0.1086, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1931, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 151 	 Loss: 0.7315688848495483
+VAL: 	 Epoch: 151 	 Loss: 0.9705644690472147
+L_align tensor(0.1131, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1264, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 152 	 Loss: 0.3991734147071838
+VAL: 	 Epoch: 152 	 Loss: 0.9499700518621914
+L_align tensor(0.1146, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1351, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 153 	 Loss: 0.43972698748111727
+VAL: 	 Epoch: 153 	 Loss: 0.8908965138421543
+L_align tensor(0.1131, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1180, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 154 	 Loss: 0.4658531904220581
+VAL: 	 Epoch: 154 	 Loss: 0.9552894398786019
+L_align tensor(0.1138, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1539, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 155 	 Loss: 0.388853645324707
+VAL: 	 Epoch: 155 	 Loss: 0.9659265297046606
+L_align tensor(0.1104, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1516, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 156 	 Loss: 0.25811543725430963
+VAL: 	 Epoch: 156 	 Loss: 0.9489007825436799
+L_align tensor(0.1123, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1269, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 157 	 Loss: 0.2028216652572155
+VAL: 	 Epoch: 157 	 Loss: 0.925604668216429
+L_align tensor(0.1098, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1233, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 158 	 Loss: 0.25673488825559615
+VAL: 	 Epoch: 158 	 Loss: 0.9288518877996914
+L_align tensor(0.1149, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1193, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 159 	 Loss: 0.11203827857971191
+VAL: 	 Epoch: 159 	 Loss: 0.9785752296447754
+L_align tensor(0.1097, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1472, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 160 	 Loss: 0.14801791906356812
+VAL: 	 Epoch: 160 	 Loss: 1.0208865041318147
+L_align tensor(0.0989, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1311, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 161 	 Loss: 0.03710968792438507
+VAL: 	 Epoch: 161 	 Loss: 0.9516370883886365
+L_align tensor(0.1010, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1702, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 162 	 Loss: 0.03820432424545288
+VAL: 	 Epoch: 162 	 Loss: 1.0008719209311665
+L_align tensor(0.1095, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1508, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 163 	 Loss: -0.06762824505567551
+VAL: 	 Epoch: 163 	 Loss: 1.0138544898102249
+L_align tensor(0.1087, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1170, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 164 	 Loss: 0.22083365321159362
+VAL: 	 Epoch: 164 	 Loss: 0.9925720657127491
+L_align tensor(0.1181, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1208, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 165 	 Loss: 1.188633781671524
+VAL: 	 Epoch: 165 	 Loss: 0.922213077545166
+L_align tensor(0.1076, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1667, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 166 	 Loss: 1.3230329751968384
+VAL: 	 Epoch: 166 	 Loss: 0.9985861156297766
+L_align tensor(0.1021, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1124, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 167 	 Loss: 0.6205817341804505
+VAL: 	 Epoch: 167 	 Loss: 0.9146945234658062
+L_align tensor(0.1258, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.0959, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 168 	 Loss: 0.8022448182106018
+VAL: 	 Epoch: 168 	 Loss: 0.8797156499779742
+L_align tensor(0.1082, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1173, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 169 	 Loss: 0.6705526232719421
+VAL: 	 Epoch: 169 	 Loss: 0.8901653704435929
+L_align tensor(0.1099, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1212, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 170 	 Loss: 0.7875263452529907
+VAL: 	 Epoch: 170 	 Loss: 0.9095373775648035
+L_align tensor(0.1069, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1681, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 171 	 Loss: 0.6593342743813991
+VAL: 	 Epoch: 171 	 Loss: 0.9293389942335046
+L_align tensor(0.1088, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1174, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 172 	 Loss: 0.49157235622406004
+VAL: 	 Epoch: 172 	 Loss: 0.9086656501327736
+L_align tensor(0.1146, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1531, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 173 	 Loss: 0.5932619027793408
+VAL: 	 Epoch: 173 	 Loss: 0.8942879455676978
+L_align tensor(0.1070, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1516, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 174 	 Loss: 0.5574094414710998
+VAL: 	 Epoch: 174 	 Loss: 0.8801793983017189
+L_align tensor(0.1023, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1454, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 175 	 Loss: 0.577786660194397
+VAL: 	 Epoch: 175 	 Loss: 0.8834261894226074
+L_align tensor(0.1012, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1571, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 176 	 Loss: 0.4747356653213501
+VAL: 	 Epoch: 176 	 Loss: 0.8861943742503291
+L_align tensor(0.1157, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1707, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 177 	 Loss: 0.43723115921020506
+VAL: 	 Epoch: 177 	 Loss: 0.9804699317268704
+L_align tensor(0.1050, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1449, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 178 	 Loss: 0.2821208000183105
+VAL: 	 Epoch: 178 	 Loss: 0.9689042740973873
+L_align tensor(0.1047, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1153, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 179 	 Loss: 0.3053272247314453
+VAL: 	 Epoch: 179 	 Loss: 0.9451084620710732
+L_align tensor(0.1124, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1395, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 180 	 Loss: 0.2526439785957336
+VAL: 	 Epoch: 180 	 Loss: 0.9465943073880845
+L_align tensor(0.1110, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1352, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 181 	 Loss: 0.22761039733886718
+VAL: 	 Epoch: 181 	 Loss: 0.9424022937166519
+L_align tensor(0.1081, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1509, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 182 	 Loss: 0.21784862875938416
+VAL: 	 Epoch: 182 	 Loss: 0.9828061435533606
+L_align tensor(0.1234, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1772, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 183 	 Loss: -0.04922103583812713
+VAL: 	 Epoch: 183 	 Loss: 1.0350901976875637
+L_align tensor(0.1190, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1381, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 184 	 Loss: -0.08332783915102482
+VAL: 	 Epoch: 184 	 Loss: 0.9735280672709147
+L_align tensor(0.1132, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1293, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 185 	 Loss: -0.0558463454246521
+VAL: 	 Epoch: 185 	 Loss: 1.0013538028882898
+L_align tensor(0.1015, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1563, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 186 	 Loss: -0.029404550790786743
+VAL: 	 Epoch: 186 	 Loss: 1.01942449376203
+L_align tensor(0.1049, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1386, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 187 	 Loss: -0.051136155426502225
+VAL: 	 Epoch: 187 	 Loss: 1.0453838818315146
+L_align tensor(0.1096, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1610, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 188 	 Loss: 0.06554040908813477
+VAL: 	 Epoch: 188 	 Loss: 0.9912708393041638
+L_align tensor(0.1182, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1576, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 189 	 Loss: 0.42710295915603635
+VAL: 	 Epoch: 189 	 Loss: 1.0382399731788083
+L_align tensor(0.1151, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1266, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 190 	 Loss: 2.7001504421234133
+VAL: 	 Epoch: 190 	 Loss: 1.0011801443238189
+L_align tensor(0.1113, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.0949, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 191 	 Loss: 4.5269920349121096
+VAL: 	 Epoch: 191 	 Loss: 0.9843363347260848
+L_align tensor(0.0976, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1264, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 192 	 Loss: 2.2884545803070067
+VAL: 	 Epoch: 192 	 Loss: 0.9032820480457251
+L_align tensor(0.1078, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1048, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 193 	 Loss: 1.675437593460083
+VAL: 	 Epoch: 193 	 Loss: 0.842788917430933
+L_align tensor(0.1189, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1276, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 194 	 Loss: 1.321839165687561
+VAL: 	 Epoch: 194 	 Loss: 0.8182978837386422
+L_align tensor(0.1028, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1151, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 195 	 Loss: 1.266864824295044
+VAL: 	 Epoch: 195 	 Loss: 0.759671183599942
+L_align tensor(0.1132, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1334, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 196 	 Loss: 1.3122225999832153
+VAL: 	 Epoch: 196 	 Loss: 0.7062517974687659
+L_align tensor(0.1040, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1045, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 197 	 Loss: 1.230070912837982
+VAL: 	 Epoch: 197 	 Loss: 0.7143471482871235
+L_align tensor(0.1234, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1781, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 198 	 Loss: 1.2384987592697143
+VAL: 	 Epoch: 198 	 Loss: 0.7487312883570574
+L_align tensor(0.1158, device='cuda:0', grad_fn=<DivBackward0>)
+L_align tensor(0.1234, device='cuda:0', grad_fn=<DivBackward0>)
+TRAIN: 	 Epoch: 199 	 Loss: 1.2091873407363891
+VAL: 	 Epoch: 199 	 Loss: 0.8804440843886223
+
+
+ END of TRAINING 
+
+
+{'min_val_epoch': 10, 'min_val_loss': 0.17964685913445294}
+INFO - ceng502 - Completed after 0:07:09

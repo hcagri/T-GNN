@@ -1,0 +1,44 @@
+{
+  "__doc__": " Please provide a run ID and select which model parameters to use ",
+  "config": {
+    "data": {
+      "path": "dataset/D/D_E",
+      "seq_len_obs": 8,
+      "seq_len_pred": 12
+    },
+    "device": {
+      "py/reduce": [
+        {
+          "py/type": "torch.device"
+        },
+        {
+          "py/tuple": [
+            "cuda"
+          ]
+        }
+      ]
+    },
+    "model": {
+      "feat_size": 64,
+      "input_size": 2,
+      "kernel_size": 3,
+      "num_gcn": 3,
+      "num_tcn": 3,
+      "output_size": 5
+    },
+    "model_path": "experiments/training/6/checkpoints/epoch_200.pth",
+    "seed": 896987078,
+    "training": {
+      "batch_size": 32,
+      "change_lr": 100,
+      "lambda": 1,
+      "lr": 0.001,
+      "num_epochs": 200
+    }
+  },
+  "exp_path": "experiments/training/6",
+  "exp_run_id": 6,
+  "f_": null,
+  "seed": 240367398,
+  "which_epoch": 200
+}

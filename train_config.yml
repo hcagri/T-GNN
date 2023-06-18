@@ -2,7 +2,7 @@
 data:
   seq_len_obs: 8
   seq_len_pred: 12
-  path: dataset/A/A_B
+  path: dataset/E/E_A
 
 model:
   input_size: 2
@@ -17,4 +17,4 @@ training:
   num_epochs: 200
   lambda: 1         # hyperparmeter to balance loss terms
   lr: 0.001
-  change_lr: 150    # Change learning rate after 100 epochs
+  change_lr: 100    # Change learning rate after 100 epochs

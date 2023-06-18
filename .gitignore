@@ -1,4 +1,4 @@
 data_test/
 t_gnn_data/
 datasets/
-experiments/
+__pycache__/

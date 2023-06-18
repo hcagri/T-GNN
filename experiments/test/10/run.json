@@ -1,0 +1,132 @@
+{
+  "artifacts": [],
+  "command": "main",
+  "experiment": {
+    "base_dir": "/home/ogam3080/cagri/trajectory/trajectory-pred",
+    "dependencies": [
+      "networkx==2.8.4",
+      "numpy==1.24.3",
+      "sacred==0.8.4",
+      "torch==2.0.1",
+      "torch-geometric==2.3.0",
+      "tqdm==4.65.0"
+    ],
+    "mainfile": "test_script.py",
+    "name": "ceng502",
+    "repositories": [
+      {
+        "commit": "ed3cf3cf5fc45acf2144b3c40c17805ffed64522",
+        "dirty": true,
+        "url": "https://github.com/hcagri/trajectory-pred.git"
+      },
+      {
+        "commit": "ed3cf3cf5fc45acf2144b3c40c17805ffed64522",
+        "dirty": true,
+        "url": "https://github.com/hcagri/trajectory-pred.git"
+      },
+      {
+        "commit": "ed3cf3cf5fc45acf2144b3c40c17805ffed64522",
+        "dirty": true,
+        "url": "https://github.com/hcagri/trajectory-pred.git"
+      },
+      {
+        "commit": "ed3cf3cf5fc45acf2144b3c40c17805ffed64522",
+        "dirty": true,
+        "url": "https://github.com/hcagri/trajectory-pred.git"
+      },
+      {
+        "commit": "ed3cf3cf5fc45acf2144b3c40c17805ffed64522",
+        "dirty": true,
+        "url": "https://github.com/hcagri/trajectory-pred.git"
+      },
+      {
+        "commit": "ed3cf3cf5fc45acf2144b3c40c17805ffed64522",
+        "dirty": true,
+        "url": "https://github.com/hcagri/trajectory-pred.git"
+      }
+    ],
+    "sources": [
+      [
+        "t_gnn_lib/__init__.py",
+        "_sources/__init___d894f0595a9694bf2ce700f9bc505488.py"
+      ],
+      [
+        "t_gnn_lib/dataset.py",
+        "_sources/dataset_db20fba8c646b96bd0665e1c6a5ff7f1.py"
+      ],
+      [
+        "t_gnn_lib/model.py",
+        "_sources/model_8dbc727bcae0b3e4829066eb5180060c.py"
+      ],
+      [
+        "t_gnn_lib/train_helpers.py",
+        "_sources/train_helpers_596a41c3527d4cf3eb09aaea812e9f32.py"
+      ],
+      [
+        "t_gnn_lib/utils.py",
+        "_sources/utils_741f6420c2c856dd4359d8128f3848d3.py"
+      ],
+      [
+        "test_script.py",
+        "_sources/test_script_cc2e26feed083f2cd3e85df91640949f.py"
+      ]
+    ]
+  },
+  "heartbeat": "2023-06-18T19:35:46.221896",
+  "host": {
+    "ENV": {},
+    "cpu": "Intel(R) Core(TM) i9-10900KF CPU @ 3.70GHz",
+    "gpus": {
+      "driver_version": "525.116.04",
+      "gpus": [
+        {
+          "model": "NVIDIA GeForce RTX 3080",
+          "persistence_mode": false,
+          "total_memory": 10240
+        }
+      ]
+    },
+    "hostname": "ogam3080-shared",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-71-generic-x86_64-with-glibc2.31"
+    ],
+    "python_version": "3.9.16"
+  },
+  "meta": {
+    "command": "main",
+    "config_updates": {},
+    "named_configs": [],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [],
+      "help": false,
+      "with": false
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2023-06-18T19:35:33.728693",
+  "status": "COMPLETED",
+  "stop_time": "2023-06-18T19:35:46.220245"
+}

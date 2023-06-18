@@ -1,0 +1,35 @@
+{
+  "data": {
+    "path": "dataset/C/C_D",
+    "seq_len_obs": 8,
+    "seq_len_pred": 12
+  },
+  "device": {
+    "py/reduce": [
+      {
+        "py/type": "torch.device"
+      },
+      {
+        "py/tuple": [
+          "cuda"
+        ]
+      }
+    ]
+  },
+  "model": {
+    "feat_size": 64,
+    "input_size": 2,
+    "kernel_size": 3,
+    "num_gcn": 3,
+    "num_tcn": 3,
+    "output_size": 5
+  },
+  "seed": 919587974,
+  "training": {
+    "batch_size": 32,
+    "change_lr": 100,
+    "lambda": 1,
+    "lr": 0.001,
+    "num_epochs": 200
+  }
+}

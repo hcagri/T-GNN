@@ -1,0 +1,35 @@
+INFO - ceng502 - Running command 'main'
+INFO - ceng502 - Started run with ID "8"
+Configuration ([34mmodified[0m, [32madded[0m, [31mtypechanged[0m, [2mdoc[0m):
+[2m  """ Please provide a run ID and select which model parameters to use """[0m
+  exp_path = 'experiments/training/3'
+  exp_run_id = 3
+  f_ = <_io.TextIOWrapper name='experiments/training/3/config.json' mode='r' encoding='UTF-8'>
+  seed = 963398969                   [2m# the random seed for this experiment[0m
+  which_epoch = 200
+  config:
+    device = device(type='cuda')
+    model_path = 'experiments/training/3/checkpoints/epoch_200.pth'
+    seed = 873344303
+    data:
+      path = 'dataset/B/B_A'
+      seq_len_obs = 8
+      seq_len_pred = 12
+    model:
+      feat_size = 64
+      input_size = 2
+      kernel_size = 3
+      num_gcn = 3
+      num_tcn = 3
+      output_size = 5
+    training:
+      batch_size = 32
+      change_lr = 150
+      lambda = 1
+      lr = 0.001
+      num_epochs = 200
+Processing Data .....
+  0%|          | 0/70 [00:00<?, ?it/s] 67%|██████▋   | 47/70 [00:00<00:00, 467.94it/s]100%|██████████| 70/70 [00:00<00:00, 515.87it/s]
+Results: 
+ade:4.267034530639648, fde:5.011399745941162
+INFO - ceng502 - Completed after 0:00:03
