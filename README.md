@@ -89,7 +89,7 @@ My goal in this project is to reproduce the ade/fde results for only some of the
 
 **Objective Function**
 - Consists of two terms
-    1. Prediction Loss
+    1. Prediction Loss (negative log-likelihood)
     2. Alignment Loss
 - Whole model is trained with $`\mathcal{L} = \mathcal{L}_{pre} + \lambda \mathcal{L}_{align}`$
 
@@ -97,6 +97,14 @@ My goal in this project is to reproduce the ade/fde results for only some of the
 ## 2.2. Our interpretation 
 
 @TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
+
+1. In the above section I have explain in `Graph definition and model` that the adjacency matrix is updated using graph attention network. The adjacency matrix for a particular frame has a shape of NxN, where N is the number of pedestrians exists on the scene at time t. That N changes as scene changes, so it is not clear how can we perform weight-shared attention model with a learnable parameter W with a shape of 1x2N, when N is not constant. 
+    - So to solve this problem I use larger N as the maximum number of pedestrians that can exists on any scene, then for s scene with smaller number of pedestrians I zero pad the adjacancy matrix. Graph attention network is performed on zero padded Adjacancy matrix and the the portion of the new adjacency matrix is returned (A_new = A_padded[:num_pedestrians, :num_pedestrians])
+
+2. In `Attention Based Adaptive Learning` part it is said that the single pedestrian is not representative for the whole trajectory and each iteration mostly we have very few number of pedestrians exists on the scene, but we also need to use the allignment loss while updating the model. So it was not clear to me when this loss is calculated. Because to obtain a representative feature vector of the trajectory domain, we should observe as much as pedestrians as we could.
+    - So I assume it would be wise to calculate at the end of each batch. So in each batch I collected the feature representations of each pedestrian before passing them to temporal prediction module. (Batch and iteration is not corresponding to same thing when working with graph structured data, since in each iteration I can only process one graph at a time in this model.)
+
+3. Decentralization operation explained in `Spatial-Temporal Feature Representations` section is not explained clearly. So I also checked the referenced papers also using this strategy. I have implemented the equation provided but the results were better when we use relative differences between coordinates, as most of the previous approaches employed.
 
 # 3. Experiments and results
 
