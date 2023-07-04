@@ -1,5 +1,4 @@
-# Adaptive Trajectory Prediction via Transferable GNN
-[Arxiv](https://arxiv.org/abs/2203.05046)
+# [Adaptive Trajectory Prediction via Transferable GNN](https://arxiv.org/abs/2203.05046)
 # 1. Introduction
 Puplished at *CVPR 2022*\
 `Authors:`
